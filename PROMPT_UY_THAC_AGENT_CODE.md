@@ -21,12 +21,12 @@ Kết quả phải là một repository có thể cài đặt và chạy bằng 
 Trước khi sửa code, đọc toàn bộ các file sau trong repo:
 
 1. `PROMPT_UY_THAC_AGENT_CODE.md` — prompt này.
-2. `Góp ý.md` — các quyết định UI/UX mới nhất và trạng thái nghiệm thu vòng 3.
+2. `Góp ý.md` — các quyết định UI/UX mới nhất và trạng thái nghiệm thu hiện tại.
 3. `Giao việc cho agent.md` — dữ liệu chuẩn, định nghĩa snapshot, design tokens, wireframe, tác vụ và điều kiện nghiệm thu.
 4. `Đặc tả.md` — phạm vi sản phẩm, yêu cầu chức năng/phi chức năng, kiến trúc và UX.
 5. `AGENTS.md` nếu đã tồn tại.
 
-Khi có mâu thuẫn, áp dụng thứ tự ưu tiên: **prompt này > `Góp ý.md` > `Giao việc cho agent.md` > `Đặc tả.md`**. Mục vòng 3 trong từng tài liệu thắng mô tả vòng cũ. Không tự thay đổi dữ liệu các ví dụ A, B, C, D hoặc số snapshot mong đợi.
+Khi có mâu thuẫn, áp dụng thứ tự ưu tiên: **prompt này > `Góp ý.md` > `Giao việc cho agent.md` > `Đặc tả.md`**. Vòng góp ý có số lớn hơn thắng mô tả vòng cũ. Không tự thay đổi dữ liệu các ví dụ A, B, C, D hoặc số snapshot mong đợi.
 
 Nếu repo mới chỉ có tài liệu, bắt đầu từ T0. Nếu đã có code, trước tiên kiểm tra trạng thái hiện tại, giữ lại thay đổi hợp lệ và tiếp tục từ mốc chưa hoàn tất; không xóa hay ghi đè công việc hiện có một cách mù quáng.
 
@@ -87,28 +87,34 @@ Nếu repo mới chỉ có tài liệu, bắt đầu từ T0. Nếu đã có cod
 - Dùng hai ảnh Graphisual sáng/tối do người dùng cung cấp làm tham chiếu về canvas lưới, thanh nổi, node tròn hatch, cạnh/trọng số và nhịp màu; không sao chép thương hiệu hoặc chức năng ngoài phạm vi.
 - Toolbar không có tên Dijkstra và không có Thêm node, Thêm cạnh hoặc Xóa. Giữ Chọn, Vô hướng/Có hướng, Hoàn tác, Làm lại, Nhập, Xuất, Toàn màn hình, Reset và Thêm ví dụ.
 - Ứng dụng mở bằng canvas trống, không overlay/hộp nạp mẫu. Chỉ nút **Thêm ví dụ** mới nạp VD1.
-- Chế độ Chọn là mặc định: nhấp đúp vùng trống thêm node mà không zoom; click node chỉ chọn, double-click node sửa tên; kéo giữa bốn điểm nối trên/phải/dưới/trái để tạo cạnh; `Backspace` xóa selection. Không dùng `Delete` cho luồng chính.
+- Chế độ Chọn là mặc định: nhấp đúp nền thêm node; click node chọn, Shift+click chọn nhiều, double-click sửa tên. Hover không hiện handle; chỉ node được chọn hiện bốn handle, và trong lúc đang kéo nối mới hiện handle đích. `Backspace` xóa toàn selection trong một transaction.
 - Kéo node phải cập nhật node và cạnh theo con trỏ trước `mouseup`; chỉ commit layout vào undo history khi kết thúc drag.
-- Cạnh ưu tiên đường thẳng. Điểm nối cạnh được phân bố quanh node theo vị trí tương đối. Trọng số là text trực tiếp giữa cạnh, có nền nhỏ cùng màu canvas, không dùng badge viền nặng.
+- Cạnh ưu tiên đường thẳng và cắt trực tiếp tại viền tròn, không bị khóa vào bốn handle sau khi đã tạo. Nhiều cạnh giữa cùng cặp node phải dùng các làn song song khác nhau trên viền và nhãn trọng số tách biệt.
+- Chọn đúng một cạnh mở thanh ngữ cảnh tại cạnh gồm `−`, giá trị/sửa trọng số, `+`, và SVG thùng rác; không có nút đổi chiều. Mobile có thêm thùng rác cạnh cụm Nguồn/Đích khi selection không rỗng.
 - Cụm zoom góc dưới trái gồm thu nhỏ, phần trăm zoom, phóng to và Sáng/Tối. Theme áp dụng đồng bộ cho canvas, toolbar/runbar, graph và panel; lưu lựa chọn bằng `localStorage`.
-- Panel đóng mặc định. Hiện bảng mở Kết quả + Bảng + Diễn giải chi tiết; snapshot `done` tự mở. Separator có nút đóng, mép canvas có nút mở; mobile dùng bottom drawer.
+- Panel đóng mặc định. **Hiện kết quả/Ẩn kết quả** mở/đóng Kết quả + Bảng + Diễn giải chi tiết; snapshot `done` tự mở. Separator có nút đóng, mép canvas có nút mở; mobile dùng bottom drawer.
 - Desktop panel khoảng 500px, tối thiểu 320px nhưng phải chừa canvas khoảng 470px. Khi canvas hẹp, Nguồn/Đích chuyển lên trên zoom/theme và nút hướng dẫn. Bảng không có scrollbar riêng (`overflow: visible`, `width: max-content`); toàn vùng panel chịu trách nhiệm overflow.
 - Sau bảng render `DetailedExplanation` lũy tiến từ snapshots: khởi tạo, từng node cố định, phép min/cập nhật; chỉ khi done mới hiện truy vết và kết luận path. Không còn `Explanation` snapshot đơn.
 - Engine và snapshot dùng NodeId, nhưng mọi nội dung nhìn thấy trong Kết quả, Bảng bước giải và DetailedExplanation phải ánh xạ sang `node.label` do người dùng nhập: tiêu đề cột, đỉnh cố định, predecessor, phép cập nhật, path và trace. Chỉ fallback ID khi không tìm thấy label.
-- Bảng bước giải chỉ để đọc: không callback nhảy bước, không `onClick` trên hàng/ô và không button cho số bước. Giữ highlight hàng hiện tại; điều hướng chỉ qua runbar/range/phím tắt.
+- Bảng bước giải chỉ để đọc: không callback nhảy bước, không `onClick` trên hàng/ô và không button cho số bước. Không sticky ngang cột Bước/Đỉnh cố định; cuộn ngang kéo toàn bảng, chỉ header sticky theo chiều dọc.
 - Runbar theo bố cục ảnh tham chiếu: `|‹`, `‹`, bộ đếm hiện tại/tổng, `›`, `›|`, phân cách, chạy/dừng, tốc độ, trạng thái và bật/tắt bảng; range nằm sát đáy.
 - “Cuối” nhảy tới snapshot `done`; “Đầu” về snapshot 0. Khi đang auto-play, mọi thao tác điều hướng khác phải dừng play trước.
-- Khi đang ở snapshot cuối và bấm Chạy hoặc Space, đưa step về 0 rồi autoplay lại; ở giữa tiến trình tiếp tục từ bước hiện tại.
+- Khi đang ở snapshot cuối và bấm Chạy, đưa step về 0 rồi autoplay lại; ở giữa tiến trình tiếp tục từ bước hiện tại. Không đăng ký Space global; Space chỉ kích hoạt button theo hành vi native sau khi Play/Pause được focus/click.
 - Sửa dữ liệu graph khi đang ở snapshot khác 0 hoặc đang play: dừng play, áp dụng thay đổi, tái tạo kết quả và đưa phiên chạy về snapshot 0, đồng thời báo ngắn gọn. Chỉ kéo vị trí node không làm chạy lại engine.
 - Reset tạo canvas trống hoàn toàn: graph vô hướng rỗng, layout rỗng, source/target null; đồng thời về bước 0, dừng autoplay, xóa selection/thông báo, đóng panel và reset viewport. Nút Thêm ví dụ nạp VD1 và fit view.
 - Node không render ∞ khi nhãn chưa hữu hạn và không render marker `t`; chỉ giữ marker nguồn `s`.
 - Cụm Nguồn/Đích dùng gap 12px, label gap 8px, select tối thiểu 118px × 38px và padding thoáng.
-- Với tối đa bốn cạnh kề một node, tối ưu đồng thời phép gán handle để tổng sai lệch góc nhỏ nhất; không cấp tham lam làm đảo thứ tự cạnh. Trên bốn cạnh, dùng handle gần góc nhất và cho phép tái sử dụng.
-- Play/Pause, chevron panel và bàn phím dùng SVG nội tuyến. Chevron/bàn phím phải tương phản trong dark mode bằng accent ấm và viền mạnh. Góc phải dưới có nút bàn phím mở popover; `?` toggle và `Escape` đóng.
+- Fullscreen là toggle hai chiều: bấm lần đầu vào toàn màn hình, lần sau thoát; đồng bộ nhãn khi thoát bằng Esc.
+- Play/Pause, chevron panel, bàn phím và thùng rác dùng SVG nội tuyến. Popover hướng dẫn mở mặc định; desktop có phím tắt, mobile có bộ hướng dẫn cảm ứng riêng; `?` toggle và `Escape` đóng.
+- Khối Kết quả chỉ giữ khoảng cách và path; bỏ badge số thứ tự trước path và bỏ khối Truy vết lặp. DetailedExplanation vẫn giữ truy vết khi done.
+- Ở mobile dưới 768px, không neo popover hướng dẫn từ nút góc dưới theo cách khiến nó phủ Nguồn/Đích. Dùng surface `position: fixed` trong safe area giữa toolbar/runbar và control đáy, nền đặc, scroll nội bộ, header/đóng luôn rõ. Tại 390×844 phải có tối thiểu 8px giữa popover với toolbar và selectors.
+- Header popover không nằm trong vùng scroll: popover `overflow: hidden`, header nền đặc/tách bằng border, chỉ body cuộn. Dưới 768px ẩn nội dung desktop và hiện tiêu đề **Hướng dẫn thao tác trên điện thoại** cùng các thao tác chạm, kéo và chụm.
+- Cụm Nguồn/Đích mobile dùng CSS grid `minmax(0,1fr) minmax(0,1fr) auto`; label nằm trên select, mỗi select rộng tối thiểu 120px ở viewport 390, nút xóa 44px ở cột cuối và khoảng trống tới mép phải không quá 12px.
+- Nút xóa mobile phải là button 44×44px có border 1px đủ bốn cạnh, không chỉ có divider/border trái.
 - Khu Kết quả/Phân tích chỉ có border ở surface ngoài; bỏ border khỏi badge, card, wrapper và cell bảng, dùng background/spacing/sticky/highlight để phân cấp.
 - Xóa thực hiện ngay, không confirmation dialog, và có thể undo. Các lỗi nhập hiển thị inline/non-blocking; không dùng `alert()`.
 - Undo/redo áp dụng cho thay đổi nội dung graph và layout, không áp dụng cho việc chuyển snapshot. Nạp preset/import là một transaction có thể undo.
-- Đổi nhãn node bằng double click; sửa trọng số bằng double click. Enter lưu, Escape hủy, blur lưu nếu hợp lệ; dữ liệu không hợp lệ giữ giá trị cũ và báo lỗi.
+- Đổi nhãn node bằng double click. Sửa trọng số qua nút giá trị trên thanh cạnh; Enter lưu, Escape hủy, blur lưu nếu hợp lệ; dữ liệu không hợp lệ giữ giá trị cũ và báo lỗi.
 - Đảm bảo thao tác bàn phím không kích hoạt phím tắt toàn cục khi focus đang ở input/select/textarea hoặc phần tử editable.
 - Tối ưu React Flow: memo hóa node/edge/callback, dùng `onlyRenderVisibleElements`, dùng `screenToFlowPosition` khi thêm node, tắt delete nội bộ của React Flow để model là nguồn sự thật. Di chuyển node chỉ thay layout và không đổi tham chiếu graph, nhờ đó không chạy lại Dijkstra.
 
@@ -161,6 +167,9 @@ Ngoài toàn bộ điều kiện nghiệm thu T0–T6 trong `Giao việc cho age
 - Playwright ít nhất gồm: chỉnh sửa graph; chạy preset A và kiểm snapshot 5, 7, 11; bật/tắt bảng; điều hướng lùi/tới; import/export; mobile drawer; viewport 1280, 820, 390; không có horizontal page overflow.
 - Playwright kiểm thêm initial 0 node/no overlay, Thêm ví dụ nạp sáu node, replay cuối→0, không ∞/t nhưng có s, selectors thoáng, bảng trước diễn giải, không heading Giải thích bước, có khởi tạo/từng bước/truy vết; cùng splitter, anchor, dark mode, chỉnh sửa, import/export và responsive.
 - Playwright import graph có ID khác label, rồi xác nhận cả ba vùng panel chỉ dùng label; bảng không có button/click navigation và bấm một hàng không đổi snapshot.
+- Playwright kiểm hover/chọn handle; thanh cạnh −/sửa/+/xóa; Shift multi-delete; bảng không sticky ngang; fullscreen vào/thoát; Space không global; hướng dẫn mở mặc định/mobile; Result không badge/trace; hai cạnh đối hướng tách làn/nhãn; thùng rác mobile luôn nằm trong viewport.
+- Playwright tại 390×844 đo bounding box để bảo đảm hướng dẫn không giao toolbar/selectors/zoom, hai select ≥120px, thùng rác cách mép trong bên phải ≤12px và trang không tràn ngang.
+- Playwright tại 390×640 buộc body hướng dẫn cuộn, xác nhận header không đổi tọa độ, nội dung desktop bị ẩn và bốn cạnh nút xóa đều có border 1px.
 - Accessibility cơ bản: semantic button/label, focus visible, keyboard, tên truy cập rõ ràng, trạng thái không chỉ dựa vào màu và tôn trọng `prefers-reduced-motion`.
 
 Nếu tiêu chí “thử với 3 người dùng thật” không thể thực hiện trong môi trường agent, không được tuyên bố đã đạt. Ghi rõ đây là bước nghiệm thu thủ công còn lại và cung cấp checklist ngắn để người dùng thực hiện.

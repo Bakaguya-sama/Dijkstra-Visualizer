@@ -1,6 +1,6 @@
 # Dijkstra Algorithm Visualizer — Tài liệu đặc tả
 
-Tác giả: Huy · Trạng thái: đã cập nhật theo góp ý giao diện vòng 7 (06/11/2026) · Tài liệu tham chiếu: ECE 307, "Transshipment and Shortest Path Problems" (George Gross, UIUC), slide 51–68
+Tác giả: Huy · Trạng thái: đã cập nhật theo góp ý giao diện vòng 10 (07/11/2026) · Tài liệu tham chiếu: ECE 307, "Transshipment and Shortest Path Problems" (George Gross, UIUC), slide 51–68
 
 ## 1. Tổng quan
 
@@ -84,11 +84,11 @@ Từ đích n, chọn node j sao cho nhãn vĩnh viễn của j + d\_jn = khoả
 | Mã | Yêu cầu | Ưu tiên |
 | --- | --- | --- |
 | FR-01 | Trong chế độ Chọn, nhấp đúp vùng trống của canvas để thêm node | MVP |
-| FR-02 | Chọn node rồi nhấn `Backspace` để xóa node và toàn bộ cạnh liên quan; undo khôi phục cùng transaction | MVP |
+| FR-02 | Shift-chọn nhiều node/cạnh rồi nhấn `Backspace` để xóa cùng một transaction; xóa node kéo theo cạnh và undo khôi phục toàn bộ | MVP |
 | FR-03 | Kéo thả node, cạnh đi theo node theo thời gian thực | MVP |
-| FR-04 | Mỗi node có bốn điểm nối trên/phải/dưới/trái; kéo từ một điểm nối sang node khác để thêm cạnh | MVP |
-| FR-05 | Sửa trọng số bằng cách bấm đúp vào cạnh, nhập số | MVP |
-| FR-06 | Chọn cạnh rồi nhấn `Backspace` để xóa; không có nút Xóa trên toolbar | MVP |
+| FR-04 | Mỗi node có bốn điểm nối chỉ hiện sau khi node được chọn; khi đang kéo nối, các điểm đích mới hiện để nhận kết nối | MVP |
+| FR-05 | Chọn cạnh mở thanh thao tác tại cạnh gồm giảm trọng số, giá trị/sửa, tăng trọng số và xóa; không có đổi chiều | MVP |
+| FR-06 | Xóa bằng `Backspace`, nút xóa trên thanh cạnh hoặc nút thùng rác mobile cạnh Nguồn/Đích; không có nút Xóa toàn cục trên toolbar | MVP |
 | FR-07 | Nhấp một lần để chọn node; nhấp đúp node để đổi tên/nhãn tại chỗ | MVP |
 | FR-08 | Chuyển đổi chế độ vô hướng/có hướng cho toàn đồ thị | MVP |
 | FR-09 | Hoàn tác/làm lại (undo/redo) khi chỉnh sửa | MVP |
@@ -123,7 +123,7 @@ Từ đích n, chọn node j sao cho nhãn vĩnh viễn của j + d\_jn = khoả
 | FR-40 | Dưới bảng có phần Diễn giải chi tiết từng bước & Truy vết, sinh động từ snapshots và chỉ hiện tới bước hiện tại | MVP |
 | FR-41 | Với mỗi node được cập nhật, hiển thị phép tính: min(∞, 4 + 3) = 7 | MVP |
 | FR-42 | Bảng bước giải chỉ để đọc, không nhận click để đổi snapshot; điều hướng bước chỉ qua runbar/phím tắt | MVP |
-| FR-43 | Kết quả cuối: độ dài, đường đi theo chiều xuôi, các bước truy vết; mọi tham chiếu đỉnh dùng tên/label người dùng đã nhập | MVP |
+| FR-43 | Khối Kết quả cuối chỉ hiện độ dài và đường đi theo chiều xuôi, không badge số thứ tự và không khối truy vết; truy vết vẫn nằm trong Diễn giải chi tiết | MVP |
 | FR-44 | Khi có nhiều đường ngắn nhất, liệt kê tất cả | v2 |
 | FR-45 | Xuất lời giải ra văn bản hoặc PDF | v2 |
 
@@ -255,8 +255,8 @@ Giao diện là một công cụ làm việc gọn, gần với trình soạn th
 | Màu | Có theme sáng/tối đồng bộ; nền canvas và lưới theo ảnh tham chiếu, xanh lam cho trạng thái thuật toán, cam ấm cho trạng thái chạy/hoàn tất; màu node theo mục 8.3 | Gradient, màu neon hoặc quá nhiều màu trang trí |
 | Chữ | Một họ font sans của hệ thống; monospace cho nhãn số và bảng; ba cỡ 12 / 14 / 16px; in đậm chỉ cho tiêu đề và kết quả | Nhiều họ font, tiêu đề cỡ lớn, in đậm khắp nơi, emoji |
 | Lưới và căn chỉnh | Lưới 8px, mọi khoảng cách là bội của 4px; nút và ô nhập desktop cao 34px, vùng chạm mobile tối thiểu 44px; văn bản căn trái, ô bảng căn giữa; nhãn và ô nhập thẳng hàng | Căn giữa đoạn văn, khoảng cách tùy hứng, control lệch chiều cao, padding quá rộng |
-| Biểu tượng | Không dùng thư viện icon. Cụm điều hướng dùng ký hiệu văn bản; Play/Pause và nút bàn phím dùng SVG nội tuyến có `aria-label` trên button | Icon trang trí, ký hiệu không có nhãn truy cập |
-| Văn bản giao diện | Câu ngắn, động từ rõ: "Bước tiếp", "Đặt làm nguồn", "Hiện bảng" | Câu quảng cáo, giọng "Khám phá sức mạnh của...", chữ hoa toàn bộ |
+| Biểu tượng | Không dùng thư viện icon. Play/Pause, bàn phím, chevron và thùng rác dùng SVG nội tuyến có `aria-label` trên button | Icon trang trí, ký hiệu không có nhãn truy cập |
+| Văn bản giao diện | Câu ngắn, động từ rõ: "Bước tiếp", "Đặt làm nguồn", "Hiện kết quả" | Câu quảng cáo, giọng "Khám phá sức mạnh của...", chữ hoa toàn bộ |
 | Chuyển động | Kéo node/cạnh cập nhật liên tục; hoạt ảnh trạng thái khoảng 150ms, có ý nghĩa và tôn trọng `prefers-reduced-motion` | Hiệu ứng nảy, parallax, hiệu ứng khi tải trang, animation lặp vô hạn |
 
 ### 8.2 Bố cục
@@ -266,9 +266,9 @@ Giao diện là một công cụ làm việc gọn, gần với trình soạn th
 - **Thanh chạy nổi** nằm ngay dưới thanh công cụ và chỉ hiện khi lựa chọn hợp lệ. Thứ tự: Đầu, Lùi, bộ đếm `4 / 12`, Tiếp, Cuối; vạch phân cách; Chạy/Dừng; Tốc độ; trạng thái bước/Hoàn tất; bật/tắt bảng. Thanh trượt tiến trình nằm sát đáy runbar.
 - **Thanh chọn Nguồn/Đích nổi** đặt ở đáy canvas, giữa; khoảng cách nhóm 12px, nhãn–select 8px, select tối thiểu 118px và cao 38px.
 - **Cụm zoom/theme** ở góc dưới trái: thu nhỏ, phần trăm zoom, phóng to và nút Sáng/Tối. Theme được lưu trong `localStorage`.
-- **Panel bên phải** đóng mặc định. Nút Hiện bảng mở toàn bộ Kết quả, Giải thích và Bảng; snapshot `done` tự mở panel. Separator có nút đóng, mép phải canvas có nút mở. Panel mặc định khoảng 500px, tối thiểu 320px và bị chặn để canvas desktop còn khoảng 470px; overflow thuộc toàn vùng nội dung, bảng không có thanh cuộn riêng.
+- **Panel bên phải** đóng mặc định. Nút Hiện kết quả mở toàn bộ Kết quả, Bảng và Diễn giải; snapshot `done` tự mở panel. Separator có nút đóng, mép phải canvas có nút mở. Panel mặc định khoảng 500px, tối thiểu 320px và bị chặn để canvas desktop còn khoảng 470px; overflow thuộc toàn vùng nội dung, bảng không có thanh cuộn riêng.
 - **Control đáy canvas**: zoom/theme ở trái, Nguồn/Đích ở giữa, hướng dẫn phím tắt ở phải. Khi canvas hẹp, Nguồn/Đích chuyển lên hàng trên để không che hai cụm còn lại.
-- **Responsive**: từ 768px trở lên là bố cục như trên. Dưới 768px: thanh công cụ nổi cuộn ngang (giữ nhãn chữ), thanh chạy nổi vẫn nằm dưới nó, thanh chọn Nguồn/Đích ở đáy canvas; panel bên phải thành ngăn kéo từ đáy màn hình, mặc định thu gọn thành một thanh chữ "Kết quả". Kiểm tra ở 1280, 820 và 390px; vùng chạm tối thiểu 44px trên cảm ứng.
+- **Responsive**: từ 768px trở lên là bố cục như trên. Dưới 768px: toolbar/runbar cuộn ngang trong khối riêng; Nguồn/Đích dùng grid hai cột với nhãn phía trên select và cột thùng rác 44px; hướng dẫn là surface cố định trong vùng an toàn giữa thanh trên và control đáy, tự cuộn nội bộ. Panel kết quả dùng bottom drawer. Kiểm tra ở 1280, 820 và 390px; vùng chạm tối thiểu 44px.
 - Wireframe chi tiết ở mục 3 của tab "Giao việc cho agent".
 
 ### 8.3 Quy ước hiển thị node
@@ -284,16 +284,16 @@ Giao diện là một công cụ làm việc gọn, gần với trình soạn th
 
 ### 8.4 Thân thiện với người dùng
 
-- **Không có màn hình chào, hộp hướng dẫn hay hộp nạp ví dụ.** Mở trang là canvas trống; người dùng nhấp đúp để tạo node hoặc bấm Thêm ví dụ.
+- **Không có màn hình chào hoặc hộp nạp ví dụ.** Mở trang là canvas trống và popover Hướng dẫn phím tắt tự mở để giới thiệu cách tạo/chỉnh graph và thao tác mobile.
 - **Hành động chính luôn ở một chỗ.** Nút "Bước tiếp" và "Chạy" không đổi vị trí giữa các trạng thái.
 - **Luôn biết đang ở đâu.** Một dòng trạng thái cố định: "Bước 4/9 — đang xét node 4".
-- **Sửa tại chỗ.** Nhấp node để chọn; nhấp đúp node để sửa nhãn; bấm đúp trọng số cạnh để sửa. Enter xác nhận, Esc hủy.
+- **Sửa tại chỗ.** Nhấp node để chọn; nhấp đúp node để sửa nhãn; chọn cạnh để mở thanh giảm/sửa/tăng trọng số và xóa. Enter xác nhận, Esc hủy.
 - **Không hộp thoại chặn.** Xóa node hoặc cạnh thực hiện ngay và cho hoàn tác (Ctrl+Z), thay vì hỏi "Bạn có chắc không?".
-- **Phím tắt:** Space chạy/dừng, ← và → lùi/tới một bước, `Backspace` xóa phần tử đang chọn khi ở chế độ Chọn, Ctrl+Z / Ctrl+Shift+Z hoàn tác/làm lại. Phím tắt không chạy khi focus ở input/select/textarea/contenteditable.
-- **Kéo thả:** chuột và cảm ứng dùng chung cơ chế của React Flow; node và cạnh đi theo con trỏ ngay trong lúc kéo. Bốn điểm nối quanh node phân tán hình học cạnh; thả kết nối vào node đích để tạo cạnh.
-- **Hình học anchor:** với tối đa bốn cạnh kề, chọn phép gán handle có tổng sai lệch góc nhỏ nhất thay vì cấp tham lam; thứ tự cạnh trên–giữa–dưới phải được bảo toàn để không cắt nhau sát node.
+- **Phím tắt:** ←/→ lùi/tới, Home/End về đầu/cuối, `Backspace` xóa selection, Ctrl+Z / Ctrl+Shift+Z hoàn tác/làm lại. Space không còn là phím global; chỉ kích hoạt Chạy/Dừng theo hành vi native sau khi nút Play/Pause đã được focus/click.
+- **Kéo thả:** chuột và cảm ứng dùng chung cơ chế của React Flow; node và cạnh đi theo con trỏ ngay trong lúc kéo. Chỉ node được chọn hiện bốn điểm nối; trong lúc kéo, điểm đích được hiện để hoàn tất kết nối.
+- **Hình học anchor:** bốn handle chỉ phục vụ tạo cạnh. Cạnh đã tồn tại cắt trực tiếp tại viền tròn theo hướng hình học. Nhiều cạnh giữa cùng một cặp node được chia thành các làn song song liên tục trên viền, không dồn vào một chấm và không chồng nhãn trọng số.
 - **Nhấp đúp:** nhấp đúp nền thêm node nhưng không làm zoom; nhấp đúp node không tạo node nền. Fit view tự động không vượt 125%.
-- **Hướng dẫn:** nút bàn phím ở góc phải dưới mở popover phím tắt; `?` mở/đóng, `Escape` đóng.
+- **Hướng dẫn:** popover mở mặc định ở lần tải trang; desktop hiển thị phím tắt chuột/bàn phím, mobile hiển thị riêng thao tác chạm, kéo và chụm. Header nằm ngoài body cuộn, có nền đặc để nội dung không ló lên phía trên; `?` mở/đóng, `Escape` đóng.
 - **Rê chuột vào node** hiện tooltip nhỏ: nhãn hiện tại, node đứng trước trên đường ngắn nhất.
 - **Trạng thái rỗng:** canvas trống hoàn toàn, không overlay. Toolbar vẫn cung cấp Thêm ví dụ.
 
@@ -319,25 +319,32 @@ Thông báo ngắn, nêu nguyên nhân và cách sửa, hiển thị ngay cạnh
 - [ ] Bảng bước giải mặc định tắt, bật/tắt được; canvas luôn là vùng lớn nhất.
 - [ ] Dùng được ở 1280, 820 và 390px; trang không cuộn ngang; nếu bảng rộng, cuộn toàn vùng nội dung kết quả.
 - [ ] Người dùng mới vẽ xong một đồ thị và chạy hết thuật toán trong dưới 2 phút mà không cần đọc hướng dẫn (thử với ít nhất 3 người).
-- [ ] Mọi thao tác chính có phím tắt và dùng được bằng cảm ứng.
+- [ ] Mọi control chính dùng được bằng bàn phím/focus và cảm ứng; Play/Pause không có Space global.
 - [ ] Độ tương phản chữ đạt WCAG AA.
 - [ ] Splitter thay đổi được độ rộng panel bằng kéo và bàn phím; canvas/panel co giãn bù nhau, bật bảng tự mở rộng panel khi đủ chỗ.
-- [ ] Không có nút Xóa; `Backspace` xóa phần tử đang chọn, xóa node xóa toàn bộ cạnh liên quan và hoàn tác khôi phục được.
+- [ ] Không có nút Xóa toàn cục; Shift-chọn nhiều + `Backspace` xóa một transaction. Cạnh có nút xóa ngữ cảnh và mobile có thùng rác cạnh Nguồn/Đích.
 - [ ] Có theme sáng/tối trong cụm zoom, áp dụng đồng bộ và giữ lựa chọn sau reload.
-- [ ] Node có bốn điểm nối, cạnh ưu tiên đường thẳng và trọng số không dùng hộp viền nặng.
-- [ ] Hai cạnh đi vào cùng node dùng endpoint khác nhau khi còn handle phù hợp; các cạnh trên–giữa–dưới không bị đảo thứ tự hoặc cắt chéo sát node.
+- [ ] Hover node không hiện điểm nối; chọn node mới hiện bốn điểm, trong lúc kéo nối mới hiện các điểm đích.
+- [ ] Cạnh cắt tại viền node; hai cạnh cùng cặp node dùng hai làn/endpoint và hai nhãn trọng số tách biệt.
 - [ ] Panel đóng mặc định, tự mở ở bước done và đóng/mở được từ runbar/separator.
 - [ ] Click node chỉ chọn; double-click node sửa tên; double-click nền thêm node mà không zoom.
 - [ ] Mở trang và Reset đều cho canvas trống; Thêm ví dụ nạp VD1 và vừa khung; không có overlay nạp mẫu.
 - [ ] Bấm Chạy ở snapshot cuối đưa về 0 và autoplay lại.
 - [ ] Node chưa tới được không hiện ∞; đích không hiện t; nguồn vẫn hiện s.
-- [ ] Cụm Nguồn/Đích có khoảng cách 12px, select tối thiểu 118px × 38px.
+- [ ] Cụm Nguồn/Đích desktop có select tối thiểu 118px × 38px; mobile dùng hai cột co giãn và mỗi select rộng ít nhất 120px tại viewport 390px.
 - [ ] Bảng nằm trước Diễn giải chi tiết; không còn component/heading Giải thích bước cũ; truy vết và kết luận chỉ hiện khi done.
 - [ ] Popover phím tắt phản ánh đúng các phím đang hỗ trợ.
 - [ ] SVG chevron và bàn phím dùng màu tương phản trong dark mode.
 - [ ] Khu Kết quả/Phân tích chỉ có border ở surface ngoài; badge, card, wrapper và ô bảng không lạm dụng border.
 - [ ] Kết quả, Bảng bước giải và Diễn giải chỉ hiển thị tên đỉnh đã nhập; không lộ ID nội bộ khi label khác ID.
 - [ ] Bảng bước giải không chứa button, không có click handler và không làm thay đổi snapshot khi bấm vào hàng/ô.
+- [ ] Toàn màn hình là toggle: bấm lần hai thoát; nút đổi nhãn theo trạng thái.
+- [ ] Kết quả không có badge số thứ tự trước path và không lặp khối Truy vết.
+- [ ] Ở 390×844, popover hướng dẫn không giao với toolbar, Nguồn/Đích, zoom/theme hoặc nút bàn phím; nền popover đặc và chữ không bị nhòe.
+- [ ] Cụm Nguồn/Đích mobile dùng grid, mỗi select rộng ít nhất 120px; thùng rác nằm sát cột phải với khoảng đệm không quá 12px và không làm cắt nội dung select.
+- [ ] Trên mobile, header hướng dẫn là vùng cố định riêng ngoài body cuộn; nội dung không được xuất hiện trong khoảng phía trên header khi kéo tới bất kỳ vị trí nào.
+- [ ] Mobile chỉ hiển thị **Hướng dẫn thao tác trên điện thoại** với hành vi cảm ứng; không hiển thị danh sách phím tắt desktop trong body.
+- [ ] Nút thùng rác mobile là vùng chạm 44×44px có viền 1px đủ bốn cạnh và bo góc control.
 
 ### 8.8 Bảng bước giải
 
@@ -347,9 +354,9 @@ Mẫu tham chiếu là bảng "Bảng kê các bước lặp Dijkstra" trong tab
 - **Hàng:** "Khởi tạo", rồi "Bước 1", "Bước 2", ... mỗi hàng là một vòng lặp.
 - **Nội dung ô:** ∞ khi chưa có nhãn; nhãn tạm viết kèm **tên** đỉnh đứng trước trong ngoặc, ví dụ "5 (B)", khi hòa viết "5 (B, D)"; "—" khi node đã chốt ở hàng trước; node vừa chốt ở hàng này viết "5\*" trên nền nhạt. Ô nguồn ở hàng Khởi tạo viết "0 ()".
 - **Hiện dần theo bước:** hàng của một vòng xuất hiện ở bước chọn node (nhãn giữ như hàng trước, chỉ ô vừa chốt có dấu \*), rồi được điền ở bước cập nhật nhãn (ô đổi nhãn có nền nhạt). Vòng 1 là vòng của nguồn, không có bước chọn riêng nên hàng "Bước 1" hiện cùng bước cập nhật đầu tiên. Hàng của bước hiện tại tô nền nhạt nhưng toàn bảng là nội dung tĩnh, không có button/click để nhảy bước.
-- **Bật/tắt:** nút chữ "Hiện bảng" / "Ẩn bảng" điều khiển toàn bộ panel Kết quả + Bảng + Diễn giải chi tiết. Mặc định đóng; khi thuật toán tới `done`, panel tự mở.
+- **Bật/tắt:** nút chữ "Hiện kết quả" / "Ẩn kết quả" điều khiển toàn bộ panel Kết quả + Bảng + Diễn giải chi tiết. Mặc định đóng; khi thuật toán tới `done`, panel tự mở.
 - **Chú thích:** một dòng nhỏ 12px phía trên bảng: "Dấu (\*) là nhãn vĩnh viễn", như mẫu.
-- **Responsive:** bảng dùng `width: max-content`; overflow nằm ở toàn vùng nội dung kết quả, hai cột đầu cố định khi cuộn; trang không bao giờ cuộn ngang.
+- **Responsive:** bảng dùng `width: max-content`; overflow nằm ở toàn vùng nội dung kết quả. Khi kéo ngang, toàn bộ bảng—including cột Bước và Đỉnh cố định—di chuyển cùng nhau; chỉ header giữ sticky theo chiều dọc. Trang không bao giờ cuộn ngang.
 - **Số liệu mong đợi** của ví dụ A nằm ở mục 2 tab "Giao việc cho agent".
 
 ## 9. Kiến trúc và công nghệ
@@ -437,3 +444,6 @@ Chưa ước lượng thời gian, vì phụ thuộc vào quỹ thời gian củ
 13. **Góp ý giao diện vòng 5**: tối ưu toàn nhóm handle để tránh cạnh cắt chéo; chevron/bàn phím tương phản ở dark mode; Reset tạo canvas trống; Ví dụ nạp VD1; chỉ giữ border ở surface ngoài của khu kết quả.
 14. **Góp ý giao diện vòng 6**: khởi động canvas trống, Thêm ví dụ mới nạp VD1, không empty overlay; replay từ đầu khi bấm Chạy ở bước cuối; ẩn ∞ và t; làm thoáng Nguồn/Đích; thay Giải thích bước bằng diễn giải đầy đủ dưới bảng và truy vết khi done.
 15. **Góp ý giao diện vòng 7**: toàn bộ panel dùng tên đỉnh (`label`) do người dùng nhập thay cho ID nội bộ; Bảng bước giải chuyển thành nội dung chỉ đọc và không còn thao tác nhảy bước bằng click.
+16. **Góp ý giao diện vòng 8**: handle chỉ hiện khi chọn/đang nối; chọn cạnh mở thanh −/trọng số/+/xóa; bảng bỏ sticky ngang hai cột đầu; fullscreen toggle; hướng dẫn mở mặc định và có mobile; Shift multi-delete; đổi Hiện/Ẩn kết quả; Result bỏ badge path và truy vết; cạnh dùng anchor liên tục trên viền và chia làn theo cặp node; mobile có nút xóa; Space không còn global.
+17. **Góp ý giao diện vòng 9**: mobile tách popover hướng dẫn vào safe area có top/bottom cố định và scroll nội bộ; Nguồn/Đích chuyển từ flex select 88px sang grid hai cột co giãn (thực tế khoảng 140px ở viewport 390) cùng cột xóa 44px, loại bỏ chồng lấn, cắt chữ và khoảng trống thừa bên phải.
+18. **Góp ý giao diện vòng 10**: tách header hướng dẫn khỏi body cuộn để che kín mép trên; mobile dùng bộ hướng dẫn cảm ứng riêng thay cho phím tắt desktop; nút thùng rác 44×44px có viền 1px đủ bốn cạnh.

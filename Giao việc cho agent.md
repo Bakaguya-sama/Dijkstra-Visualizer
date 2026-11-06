@@ -279,7 +279,7 @@ Khung đôi (╔═╗) là thanh nổi: nằm đè lên canvas, cách mép 16px
 │    ║ Chọn | [Vô hướng] | Hoàn tác Làm lại | Nhập Xuất ...       ║    │ Đường đi: 1 → 4 → 5 → 6                │
 │    ╚════════════════════════════════════════════════════════════╝    │ Truy vết: 6 ← 5 ← 4 ← 1                │
 │    ╔════════════════════════════════════════════════════════════╗    │ ────────────────────────────────────── │
-│    ║ |‹  ‹  4/12  ›  ›|  |  ▶  [1x]  Bước 4  | Ẩn bảng          ║    │ Bảng + Diễn giải chi tiết              │
+│    ║ |‹  ‹  4/12  ›  ›|  |  ▶  [1x]  Bước 4  | Ẩn kết quả       ║    │ Bảng + Diễn giải chi tiết              │
 │    ╚════════════════════════════════════════════════════════════╝    │ Node 4 có nhãn tạm nhỏ nhất (4),       │
 │                                                                      │ nên được chốt vĩnh viễn.               │
 │                         CANVAS (React Flow)                          │ ────────────────────────────────────── │
@@ -296,7 +296,7 @@ Khung đôi (╔═╗) là thanh nổi: nằm đè lên canvas, cách mép 16px
 └──────────────────────────────────────────────────────────────────────┴────────────────────────────────────────┘
 ```
 
-Khi đã chọn nguồn và một đích khác nguồn (hoặc "Tất cả node"): thanh chạy hiện nhưng panel đóng mặc định. "Hiện bảng" mở toàn bộ Kết quả, Giải thích và Bảng; snapshot `done` tự mở panel. Separator có nút đóng, mép canvas có nút mở. Panel khoảng 500px, tối thiểu 320px nhưng phải chừa canvas khoảng 470px. Bảng không có scrollbar riêng: toàn vùng nội dung panel chịu trách nhiệm overflow, header và hai cột đầu vẫn sticky.
+Khi đã chọn nguồn và một đích khác nguồn (hoặc "Tất cả node"): thanh chạy hiện nhưng panel đóng mặc định. "Hiện kết quả" mở toàn bộ Kết quả, Diễn giải và Bảng; snapshot `done` tự mở panel. Separator có nút đóng, mép canvas có nút mở. Panel khoảng 500px, tối thiểu 320px nhưng phải chừa canvas khoảng 470px. Bảng không có scrollbar riêng: toàn vùng nội dung panel chịu trách nhiệm overflow; cuộn ngang kéo toàn bảng, chỉ header sticky theo chiều dọc.
 
 ### Wireframe (dưới 768px)
 
@@ -368,7 +368,7 @@ src/styles      tokens.css
 7. Không giả định id node bắt đầu từ 1 (ví dụ B bắt đầu từ 0).
 8. Mỗi tác vụ một nhánh, một PR nhỏ; chỉ sửa các file được liệt kê cho tác vụ đó.
 9. Toolbar không có tên Dijkstra hay nút Thêm node/Thêm cạnh/Xóa. Mở app là canvas trống; có Reset và Thêm ví dụ.
-10. Chọn: nhấp đúp canvas thêm node, click node để chọn, double-click node sửa tên, kéo bốn handle tạo cạnh, Backspace xóa.
+10. Chọn: nhấp đúp canvas thêm node, click/Shift+click để chọn, double-click node sửa tên, handle chỉ hiện sau khi chọn; Backspace xóa toàn selection.
 11. Light/dark nằm trong cụm zoom; kéo node cập nhật trực tiếp; bảng không có scrollbar riêng.
 
 ## Trước khi báo xong
@@ -428,11 +428,11 @@ Sáu tác vụ sau T0, mỗi tác vụ có phụ thuộc, danh sách file đư�
 
 - Đáp ứng FR-20 đến FR-24, FR-30 đến FR-35, FR-40 đến FR-43 ở tab đặc tả.
 - Thanh chọn Nguồn/Đích là thanh nổi ở đáy canvas và không cho hai lựa chọn trùng nhau. Thanh chạy gồm `|‹`, `‹`, bộ đếm, `›`, `›|`, SVG Play/Pause, tốc độ, trạng thái và bật/tắt panel; chỉ hiện khi lựa chọn hợp lệ.
-- Panel đóng mặc định dù thanh chạy đã hiện; Hiện bảng mở Kết quả/Bảng/Diễn giải chi tiết và snapshot done tự mở panel.
+- Panel đóng mặc định dù thanh chạy đã hiện; Hiện kết quả mở Kết quả/Bảng/Diễn giải chi tiết và snapshot done tự mở panel.
 - Chạy ví dụ A: màu node đúng mục 3 và câu giải thích đúng mẫu mục 2 (Playwright kiểm ở bước 5, 7 và 11).
 - Toàn panel Kết quả + Bảng đóng mặc định. Khi mở, ở mọi snapshot nội dung các hàng khớp bảng mong đợi ở mục 2; bảng chỉ để đọc và không nhận click để đổi bước.
 - Bước lùi rồi tới trả đúng trạng thái trước đó; điều hướng bằng runbar, thanh trượt và phím tắt, không bằng bảng.
-- Phím tắt Space, ←, → hoạt động.
+- Phím ←, → hoạt động; Space global bị loại bỏ ở vòng 8.
 - Sửa đồ thị khi đang chạy thì có cảnh báo và reset về bước đầu.
 
 **T5**
@@ -444,13 +444,13 @@ Sáu tác vụ sau T0, mỗi tác vụ có phụ thuộc, danh sách file đư�
 **T6**
 
 - Mọi mục ở danh sách 8.7 của tab đặc tả được tick.
-- Giao diện dùng được ở 1280, 820 và 390px: trang không cuộn ngang; khi bảng rộng, toàn vùng kết quả cuộn và hai cột đầu cố định (Playwright chụp màn hình ở ba cỡ này).
+- Giao diện dùng được ở 1280, 820 và 390px: trang không cuộn ngang; khi bảng rộng, toàn vùng kết quả cuộn và toàn bộ bảng dịch ngang cùng nhau (Playwright chụp màn hình ở ba cỡ này).
 - Kéo thả, nối cạnh và chạy từng bước dùng được trên màn hình cảm ứng (điện thoại thật hoặc giả lập).
 - Có nút phóng to canvas toàn màn hình; chữ đọc được khi chiếu.
 - `README.md` nêu cách chạy, cấu trúc thư mục, cách thêm ví dụ.
 - Splitter kéo được bằng chuột/cảm ứng và bàn phím; canvas/panel co giãn bù nhau; bật bảng tự mở rộng panel nếu có chỗ và bảng không cuộn riêng.
-- Không có nút Xóa; `Backspace` xóa selection trong chế độ Chọn; xóa node kéo theo cạnh và undo khôi phục đủ.
-- Nhấp đúp canvas thêm node mà không zoom; click node chỉ chọn, double-click sửa tên; bốn điểm nối quanh node dùng để kéo tạo cạnh; cạnh ưu tiên đường thẳng.
+- Không có nút Xóa toàn cục; Shift multi-select + `Backspace` xóa một transaction; cạnh và mobile có nút xóa ngữ cảnh.
+- Nhấp đúp canvas thêm node; click/Shift+click chọn; handle chỉ hiện sau khi chọn hoặc đang nối; cạnh đã có bám viền liên tục và chia làn theo cặp node.
 - Có light/dark trong cụm zoom và lựa chọn được giữ sau reload.
 - React Flow bật render phần tử trong viewport; kéo layout không tính lại engine; kiểm tra thao tác mượt ở 50 node/200 cạnh.
 
@@ -486,7 +486,7 @@ Mục này ghi nhận yêu cầu phát sinh sau bản triển khai đầu và th
 1. Toolbar và runbar dùng nền than đậm, bề mặt gọn và tương phản; canvas/panel vẫn sáng. Không sao chép nguyên ảnh tham chiếu, chỉ dùng ngôn ngữ bố cục và nhịp điều khiển.
 2. Runbar sắp theo transport bar: `|‹`, `‹`, bộ đếm hiện tại/tổng, `›`, `›|`, phân cách, chạy/dừng, tốc độ, trạng thái và bật/tắt bảng; thanh range nằm ở đáy. Mọi ký hiệu có accessible name tiếng Việt.
 3. Desktop có splitter `role="separator"` rộng 10px giữa canvas và panel. Kéo trái/phải hoặc dùng phím mũi tên để đổi panel từ 320 tới 760px; canvas chiếm phần còn lại. Mobile dưới 768px tiếp tục dùng bottom drawer và không hiện splitter.
-4. Bảng bước giải có header và hai cột đầu sticky; không làm trang tràn ngang. Cách xử lý overflow được thay thế bởi mục 8.
+4. Bảng bước giải có header sticky theo chiều dọc; hai cột đầu không sticky ngang, nên cuộn kéo toàn bảng. Không làm trang tràn ngang.
 5. Chế độ Chọn quản lý selection ở state ứng dụng. Cách xóa được thay thế bởi mục 8.
 6. Nguồn và đích cụ thể bắt buộc khác nhau. Option trùng bị disable, reducer và `validateGraph` chặn, JSON import cùng endpoint bị từ chối. `target = null` (Tất cả node) vẫn hợp lệ; graph một node chỉ chạy theo chế độ này.
 7. Tối ưu canvas: node/edge và callback ổn định bằng memoization, kéo node chỉ cập nhật layout và giữ nguyên tham chiếu graph, tọa độ node mới dùng `screenToFlowPosition`, React Flow dùng `onlyRenderVisibleElements`, và phím xóa mặc định của React Flow bị tắt để tránh UI lệch model.
@@ -510,7 +510,7 @@ Mục này là yêu cầu mới nhất và thắng mọi wireframe/tiêu chí c�
 
 Mục này thắng các wireframe và điều kiện cũ nếu có mâu thuẫn:
 
-1. Nút Hiện bảng/Ẩn bảng điều khiển toàn bộ panel. Thành phần Giải thích cũ được thay bằng Bảng + Diễn giải chi tiết ở vòng 6. Panel đóng mặc định và tự mở khi snapshot chuyển sang `done`.
+1. Nút Hiện kết quả/Ẩn kết quả điều khiển toàn bộ panel. Thành phần Giải thích cũ được thay bằng Bảng + Diễn giải chi tiết ở vòng 6. Panel đóng mặc định và tự mở khi snapshot chuyển sang `done`.
 2. Separator chứa nút đóng panel; lúc đóng, mép phải canvas có nút mở. Mobile dùng bottom drawer và nút đầu drawer đóng toàn panel.
 3. Toolbar thêm Reset ngay sau Toàn màn hình. Hành vi Reset được thay thế ở vòng 5: tạo canvas trống thay vì nạp VD1.
 4. Click node chỉ chọn; double-click node mới sửa tên. Double-click nền thêm node nhưng `zoomOnDoubleClick=false`; fit view không vượt 125%.
@@ -518,7 +518,7 @@ Mục này thắng các wireframe và điều kiện cũ nếu có mâu thuẫn:
 6. Panel desktop không được làm canvas hẹp dưới khoảng 470px. Khi canvas hẹp, Nguồn/Đích chuyển lên trên zoom/theme và nút hướng dẫn để ba cụm không chồng nhau.
 7. Panel dùng surface nổi bật, chữ/badge/số kết quả lớn hơn và khoảng cách giữa các khối gọn hơn; bảng vẫn không có scrollbar riêng.
 8. Play/Pause dùng SVG nội tuyến đúng hình; không dùng ký tự `Ⅱ`. Không cài thư viện icon.
-9. Góc phải dưới có nút bàn phím mở popover hướng dẫn. `?` toggle, `Escape` đóng; nội dung gồm undo/redo, zoom, multi-select, edit, Backspace, arrows, Space, Home/End.
+9. Góc phải dưới có nút bàn phím mở popover hướng dẫn. Popover tự mở khi tải trang; `?` toggle, `Escape` đóng; nội dung gồm tạo/chỉnh graph, undo/redo, zoom, multi-select, Backspace, arrows, Home/End và mobile; không có Space global.
 10. E2E bổ sung panel đóng/mở/tự mở, Reset, click/double-click, double-click không zoom, anchor đích khác nhau, shortcut popover và control đáy không chồng.
 
 ## 10. Điều chỉnh sau vòng góp ý giao diện 5
@@ -535,7 +535,7 @@ Mục này là quyết định mới nhất và thắng nội dung cũ:
 Mục này thắng mọi mô tả cũ nếu còn mâu thuẫn:
 
 1. `useReducer` khởi tạo bằng `emptyDocument`, không phải preset. Canvas trống không hiện hộp thoại, câu hướng dẫn hoặc nút Nạp VD1. Toolbar đổi nhãn thành **Thêm ví dụ**; chỉ nút này mới nạp VD1.
-2. Khi bấm Play/Space ở snapshot cuối và hiện không playing, đặt step về 0 rồi bật autoplay. Ở giữa tiến trình tiếp tục từ bước hiện tại; khi playing thì nút vẫn dừng bình thường.
+2. Khi bấm Play ở snapshot cuối và hiện không playing, đặt step về 0 rồi bật autoplay. Ở giữa tiến trình tiếp tục từ bước hiện tại; Space global bị loại bỏ ở vòng 8.
 3. Node chỉ render `.node-distance` khi khoảng cách hữu hạn. Bỏ marker `t`; marker `s` của nguồn vẫn giữ.
 4. Cụm Nguồn/Đích dùng gap 12px, label gap 8px, select tối thiểu 118px × 38px, padding ngang 12px và viền inset nhẹ.
 5. Xóa `Explanation.tsx`. Trong panel, render `LabelTable` trước rồi `DetailedExplanation`.
@@ -553,3 +553,41 @@ Mục này thắng mọi mô tả cũ nếu còn mâu thuẫn:
 3. `LabelTable` không nhận callback nhảy bước, không đặt `onClick` lên hàng/ô và không render button cho số bước. Highlight hàng hiện tại vẫn được giữ như chỉ dấu trực quan.
 4. Điều hướng snapshot chỉ dùng runbar (`Đầu/Lùi/Tới/Cuối`, Play/Pause, range) và các phím tắt đã đặc tả.
 5. E2E phải import một graph có ID khác hoàn toàn label, chạy tới cuối và xác nhận panel chỉ có label; đồng thời xác nhận bảng không có button và bấm hàng không đổi bộ đếm bước.
+
+## 13. Điều chỉnh sau vòng góp ý giao diện 8
+
+Mục này là yêu cầu mới nhất và thắng mọi mô tả cũ nếu còn mâu thuẫn:
+
+1. Hover node không hiện handle. Chọn node mới hiện bốn handle; khi đang kéo nối, handle đích được hiện tạm để hoàn tất kết nối.
+2. Chọn đúng một cạnh mở toolbar nổi tại cạnh gồm giảm trọng số, giá trị/sửa, tăng trọng số và SVG thùng rác; tuyệt đối không có đổi chiều.
+3. `LabelTable` bỏ sticky ngang ở cột Bước và Đỉnh cố định. Overflow vẫn thuộc panel, nhưng cuộn ngang phải kéo toàn bảng; header chỉ sticky theo trục dọc.
+4. Toàn màn hình phải toggle vào/thoát và đồng bộ trạng thái qua `fullscreenchange`.
+5. Hướng dẫn tự mở khi tải trang; bổ sung tạo node/cạnh, chỉnh sửa, chọn nhiều và hướng dẫn mobile chi tiết. Xóa dòng Space global.
+6. Shift+click chọn nhiều node/cạnh; `Backspace` xóa selection bằng action reducer duy nhất để undo một lần khôi phục đủ.
+7. Runbar đổi nhãn thành **Hiện kết quả / Ẩn kết quả**.
+8. Result path bỏ badge tròn số thứ tự và bỏ block Truy vết; DetailedExplanation vẫn giữ truy vết học thuật khi done.
+9. Cạnh đã tồn tại dùng điểm cắt liên tục trên viền node. Các cạnh cùng một cặp node được nhóm và gán lane offset ổn định để endpoint cùng nhãn không chồng nhau.
+10. Dưới 768px, khi selection không rỗng, hiện SVG thùng rác trong cụm Nguồn/Đích và bảo đảm nút nằm trong viewport 390px.
+11. Không xử lý Space toàn cục. Play/Pause chỉ được kích hoạt bằng click/tap hoặc hành vi keyboard native khi button đã focus.
+12. E2E bắt buộc kiểm tra đủ các mục trên, cùng fullscreen hai chiều và không phát sinh lỗi React update loop.
+
+## 14. Điều chỉnh sau vòng góp ý giao diện 9
+
+Mục này thắng mô tả mobile cũ nếu còn mâu thuẫn:
+
+1. Ở viewport 390×844, popover hướng dẫn không được kéo từ góc dưới xuyên qua cụm Nguồn/Đích. Đặt popover bằng `position: fixed` trong safe area: phía trên cách toolbar/runbar ít nhất 8px, phía dưới cách selectors ít nhất 8px; nội dung dài cuộn bên trong.
+2. Popover mobile dùng nền surface đặc, border rõ, shadow nhẹ và header đóng sticky; không để nội dung phía sau làm chữ mất nét.
+3. Cụm Nguồn/Đích mobile dùng grid hai cột co giãn và một cột auto cho thùng rác. Label đặt phía trên select; không ép select còn 88px.
+4. Ở viewport 390px, mỗi select phải rộng ít nhất 120px. Nút thùng rác 44×44px nằm trong cùng surface, cách mép trong bên phải không quá 12px.
+5. Khi chưa chọn phần tử, cột auto thu về 0; khi chọn, nút xuất hiện mà không làm hai select chồng nhau, mất chữ hoặc đẩy ra ngoài viewport.
+6. E2E đo bounding box giữa guide/toolbar/selectors/dock, chiều rộng select và khoảng cách nút xóa tới mép phải; chụp ảnh cả trạng thái mở hướng dẫn và trạng thái đã chọn node.
+
+## 15. Điều chỉnh sau vòng góp ý giao diện 10
+
+Mục này thắng mô tả hướng dẫn và nút xóa mobile cũ nếu còn mâu thuẫn:
+
+1. Không để toàn popover cùng cuộn. Popover là flex column `overflow: hidden`; header là phần cố định, nền surface đặc và có đường phân cách dưới; chỉ body `overflow-y: auto`.
+2. Khi cuộn body tới đầu, giữa hoặc cuối, tọa độ header không đổi và không có nội dung nào hiển thị trong khoảng phía trên/header.
+3. Desktop giữ **Hướng dẫn phím tắt**. Dưới 768px ẩn nhóm desktop và hiển thị **Hướng dẫn thao tác trên điện thoại** viết riêng cho cảm ứng: chạm/chạm đúp, kéo điểm nối, chỉnh cạnh, xóa bằng thùng rác, kéo/chụm canvas và nút điều khiển thuật toán.
+4. Nút thùng rác trong grid Nguồn/Đích là button 44×44px, có border 1px ở cả bốn cạnh, bo góc và focus state như control khác. Không thay border đầy đủ bằng divider trái.
+5. E2E dùng viewport thấp như 390×640 để buộc body hướng dẫn cuộn; xác nhận `scrollTop > 0`, header giữ nguyên tọa độ và hướng dẫn desktop bị ẩn. Đồng thời kiểm tra riêng `borderTop/Right/Bottom/LeftWidth` của nút xóa đều là 1px.

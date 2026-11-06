@@ -7,6 +7,7 @@ export type EditorAction =
   | { type: 'move-node'; id: NodeId; position: Layout[NodeId] }
   | { type: 'rename-node'; id: NodeId; label: string }
   | { type: 'delete-node'; id: NodeId }
+  | { type: 'delete-elements'; nodeIds: NodeId[]; edgeIds: string[] }
   | { type: 'add-edge'; edge: GraphEdge }
   | { type: 'update-edge'; id: string; weight: number }
   | { type: 'delete-edge'; id: string }
@@ -33,6 +34,7 @@ export function graphReducer(state: EditorState, action: EditorAction): EditorSt
     case 'add-node': next.graph.nodes.push(action.node); next.layout[action.node.id]=action.position; break;
     case 'rename-node': next.graph.nodes=next.graph.nodes.map(node=>node.id===action.id?{...node,label:action.label}:node); break;
     case 'delete-node': next.graph.nodes=next.graph.nodes.filter(node=>node.id!==action.id); next.graph.edges=next.graph.edges.filter(edge=>edge.from!==action.id&&edge.to!==action.id); delete next.layout[action.id]; if(next.source===action.id)next.source=null; if(next.target===action.id)next.target=null; break;
+    case 'delete-elements': { const nodeIds=new Set(action.nodeIds);const edgeIds=new Set(action.edgeIds);next.graph.nodes=next.graph.nodes.filter(node=>!nodeIds.has(node.id));next.graph.edges=next.graph.edges.filter(edge=>!edgeIds.has(edge.id)&&!nodeIds.has(edge.from)&&!nodeIds.has(edge.to));for(const id of nodeIds)delete next.layout[id];if(next.source&&nodeIds.has(next.source))next.source=null;if(next.target&&nodeIds.has(next.target))next.target=null;break; }
     case 'add-edge': { const issues=validateGraph({...next.graph,edges:[...next.graph.edges,action.edge]}); if(issues.length)return{...state,error:issues[0].message}; next.graph.edges.push(action.edge); break; }
     case 'update-edge': if(!Number.isFinite(action.weight)||action.weight<0)return{...state,error:'Trọng số phải là số hữu hạn và không âm.'}; next.graph.edges=next.graph.edges.map(edge=>edge.id===action.id?{...edge,weight:action.weight}:edge); break;
     case 'delete-edge': next.graph.edges=next.graph.edges.filter(edge=>edge.id!==action.id); break;

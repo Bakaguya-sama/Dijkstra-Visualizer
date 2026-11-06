@@ -10,6 +10,7 @@ type Props = {
   onImport: () => void;
   onExport: () => void;
   onFullscreen: () => void;
+  fullscreen: boolean;
   onReset: () => void;
   onExample: () => void;
 };
@@ -24,7 +25,7 @@ export function Toolbar(props: Props) {
     <span className="toolbar-divider" aria-hidden="true" />
     <button onClick={props.onImport}>{vi.import}</button>
     <button onClick={props.onExport}>{vi.export}</button>
-    <button onClick={props.onFullscreen}>{vi.fullscreen}</button>
+    <button onClick={props.onFullscreen}>{props.fullscreen ? vi.exitFullscreen : vi.fullscreen}</button>
     <button onClick={props.onReset} title={vi.resetCanvas}>{vi.reset}</button>
     <button onClick={props.onExample}>{vi.example}</button>
   </div>;

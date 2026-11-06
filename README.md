@@ -126,9 +126,9 @@ Sau đó mở địa chỉ mạng mà Vite hiển thị. Hệ điều hành có 
 1. Mở ứng dụng: canvas hoàn toàn trống và không có hộp nạp mẫu. Nhấn **Thêm ví dụ** trên toolbar để nạp VD1.
 2. Kiểm tra hai ô **Nguồn** và **Đích** ở phía dưới canvas.
 3. Dùng cụm transport `|‹`, `‹`, `›`, `›|` và nút SVG Play/Pause để về đầu, lùi, tiến, tới cuối hoặc chạy/dừng tự động. Di chuột vào nút để xem nhãn tiếng Việt.
-4. Panel kết quả đóng mặc định. Nhấn **Hiện bảng** để mở Kết quả, Bảng bước giải và Diễn giải chi tiết; khi thuật toán hoàn tất, panel tự mở.
+4. Panel kết quả đóng mặc định. Nhấn **Hiện kết quả** để mở Kết quả, Bảng bước giải và Diễn giải chi tiết; khi thuật toán hoàn tất, panel tự mở.
 5. Kéo separator để đổi độ rộng panel; dùng nút trên separator để đóng và nút ở mép phải canvas để mở lại. Panel luôn chừa đủ chỗ cho control canvas. Nếu nội dung rộng, cuộn toàn vùng kết quả thay vì cuộn riêng bảng.
-6. Tới bước cuối để xem khoảng cách, đường đi, diễn giải từng bước và truy vết. Bấm **Chạy** lần nữa ở bước cuối để phát lại từ bước 0.
+6. Tới bước cuối để xem khoảng cách, đường đi và diễn giải từng bước. Truy vết nằm trong phần Diễn giải chi tiết, không lặp lại ở thẻ Kết quả. Bấm **Chạy** lần nữa ở bước cuối để phát lại từ bước 0.
 7. Dùng cụm góc dưới trái để thu/phóng và chuyển **Sáng/Tối**. Lựa chọn theme được giữ lại sau khi tải lại trang.
 
 Kết quả, tiêu đề cột, đỉnh cố định, predecessor, đường đi và truy vết đều dùng đúng tên đỉnh đã nhập. ID chỉ là khóa nội bộ và không xuất hiện trong panel khi khác tên. Bảng bước giải là nội dung chỉ đọc; bấm vào hàng/ô không đổi bước. Hãy dùng runbar, thanh trượt hoặc phím tắt để điều hướng.
@@ -136,29 +136,32 @@ Kết quả, tiêu đề cột, đỉnh cố định, predecessor, đường đi
 ### Tự tạo đồ thị
 
 1. Ở chế độ **Chọn**, nhấp đúp vùng trống trên canvas để thêm node.
-2. Rê chuột lên node để thấy bốn điểm nối ở trên, phải, dưới và trái; kéo từ một điểm của node nguồn sang node đích để thêm cạnh.
-3. Bấm đúp vào trọng số cạnh để sửa. Trọng số phải là số hữu hạn và không âm.
+2. Chọn node để hiện bốn điểm nối ở trên, phải, dưới và trái; hover đơn thuần không hiện điểm. Kéo từ một điểm nối sang node đích; trong lúc kéo, các điểm đích sẽ hiện ra.
+3. Chọn cạnh để mở thanh `− / trọng số / + / xóa`. Bấm giá trị để nhập trực tiếp; trọng số phải hữu hạn và không âm. Thanh không có thao tác đổi chiều.
 4. Nhấp một lần vào node để chọn; nhấp đúp để đổi tên hiển thị. Nhấn `Enter` để lưu hoặc `Escape` để hủy.
 5. Chọn **Nguồn** và **Đích** khác nhau. Ứng dụng vô hiệu hóa node nguồn trong danh sách đích và ngược lại. Chọn **Tất cả node** nếu muốn tính khoảng cách từ nguồn tới mọi node có thể tới; đây cũng là chế độ chạy hợp lệ cho đồ thị một node.
 6. Dùng **Tiếp**, **Lùi**, **Đầu**, **Cuối**, **Chạy/Dừng** hoặc thanh trượt để điều hướng.
 
-Để xóa node hoặc cạnh, vào chế độ **Chọn**, nhấp một lần vào phần tử rồi nhấn `Backspace`. Không có nút Xóa trên toolbar. Xóa node đồng thời xóa mọi cạnh liên quan trong cùng transaction; **Hoàn tác** khôi phục đầy đủ.
+Để xóa nhiều phần tử, giữ `Shift` và chọn từng node/cạnh rồi nhấn `Backspace`; toàn bộ được xóa trong một transaction nên **Hoàn tác** khôi phục một lần. Có thể xóa một cạnh từ thanh cạnh. Trên mobile, sau khi chọn phần tử sẽ có nút thùng rác ngay cạnh Nguồn/Đích.
 
 Khi kéo node, node và mọi cạnh liên quan chuyển động theo con trỏ ngay trong lúc giữ chuột. Cạnh mới ưu tiên đường thẳng; trọng số được đặt trực tiếp trên cạnh.
 
-Nhấp đúp vùng trống thêm node nhưng không thay đổi zoom. Nhiều cạnh quanh cùng node được phân phối tối ưu qua bốn điểm nối để không đổi thứ tự hoặc cắt chéo sát node.
+Nhấp đúp vùng trống thêm node nhưng không thay đổi zoom. Cạnh đã tạo bám trực tiếp vào viền tròn thay vì bốn chấm. Hai cạnh giữa cùng cặp node được tách thành hai làn song song nên endpoint và trọng số không chồng nhau.
 
 Nút **Reset** làm mới thành canvas trống hoàn toàn. Nút **Thêm ví dụ** nạp VD1 cùng layout, nguồn và đích chuẩn. Không có hộp hay nút nạp mẫu ở giữa canvas.
 
 Node chưa có khoảng cách hữu hạn không hiện `∞`; node đích không hiện chữ `t`. Node nguồn vẫn có chữ `s`. Dưới bảng bước giải là phần diễn giải lũy tiến: khởi tạo, từng lần cố định/cập nhật node và truy vết khi hoàn tất.
 
-Nút hình bàn phím ở góc phải dưới mở hướng dẫn phím tắt. Có thể nhấn `?` để mở/đóng và `Escape` để đóng.
+Hướng dẫn tự mở khi tải trang. Desktop hiển thị phím tắt chuột/bàn phím; mobile tự chuyển sang **Hướng dẫn thao tác trên điện thoại** với cách chạm, chạm đúp, kéo điểm nối, chỉnh/xóa phần tử, kéo/chụm canvas và điều khiển thuật toán. Nút bàn phím, phím `?` và `Escape` dùng để mở/đóng sau đó.
+
+Trên mobile, hướng dẫn nằm trong safe area giữa toolbar và các control đáy nên không che Nguồn/Đích. Header có nền đặc và nằm ngoài body cuộn, vì vậy nội dung không ló lên phía trên khi kéo. Hai ô Nguồn/Đích chuyển thành hai cột có nhãn phía trên, giữ đủ độ rộng để không cắt chữ; nút thùng rác 44×44px nằm ở cột cuối, sát mép phải và có viền đủ bốn cạnh.
+
+Nút **Toàn màn hình** hoạt động hai chiều: bấm lần đầu để vào và bấm lại để thoát. Nếu thoát bằng `Escape`, nhãn nút cũng tự đồng bộ.
 
 ### Phím tắt
 
 | Phím | Hành động |
 | --- | --- |
-| `Space` | Chạy hoặc dừng tự động; ở bước cuối thì phát lại từ bước 0 |
 | `←` | Lùi một snapshot |
 | `→` | Tới một snapshot |
 | `Home` | Về snapshot đầu |
@@ -170,7 +173,7 @@ Nút hình bàn phím ở góc phải dưới mở hướng dẫn phím tắt. C
 | `Escape` | Hủy khi đang sửa nhãn hoặc trọng số |
 | `?` | Mở hoặc đóng hướng dẫn phím tắt |
 
-Phím tắt toàn cục không được kích hoạt khi con trỏ đang ở ô nhập hoặc danh sách chọn.
+`Space` không phải phím tắt toàn cục. Sau khi người dùng click/focus nút Play/Pause, Space hoặc Enter có thể kích hoạt chính button theo hành vi bàn phím native. Các phím tắt toàn cục khác không chạy khi con trỏ ở ô nhập hoặc danh sách chọn.
 
 ## 6. Nhập và xuất JSON
 

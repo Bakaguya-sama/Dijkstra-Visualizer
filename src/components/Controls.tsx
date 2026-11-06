@@ -17,7 +17,7 @@ export function Controls(props:Props){const last=Math.max(0,props.count-1);const
     <button className="play-button" aria-label={props.playing?vi.pause:vi.play} title={props.playing?vi.pause:vi.play} onClick={props.onPlaying}><PlaybackIcon playing={props.playing}/></button>
     <label className="speed-control"><span>{vi.speed}</span><select value={props.speed} onChange={event=>props.onSpeed(Number(event.target.value))}><option value="1200">0.5x</option><option value="700">1x</option><option value="350">2x</option></select></label>
     <span className={`run-status${atEnd?' complete':''}`}>{atEnd?vi.complete:`${vi.step} ${props.index}`}</span>
-    <button className="table-toggle" onClick={props.onTable}>{props.showTable?vi.hideTable:vi.showTable}</button>
+    <button className="table-toggle" onClick={props.onTable}>{props.showTable?vi.hideResultPanel:vi.showResultPanel}</button>
   </div>
   <input className="step-range" aria-label={vi.step} type="range" min="0" max={last} value={props.index} onChange={event=>props.onIndex(Number(event.target.value))}/>
 </div>}

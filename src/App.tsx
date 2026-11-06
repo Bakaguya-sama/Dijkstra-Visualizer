@@ -18,6 +18,7 @@ const sameIds = (left: string[], right: string[]) => left.length === right.lengt
 const panelMaximum = () => Math.max(320, Math.min(1200, window.innerWidth - 480));
 const emptyDocument: GraphDocument = { version: 1, graph: { directed: false, nodes: [], edges: [] }, layout: {}, source: null, target: null };
 const PanelChevron = ({ direction }: { direction: 'left' | 'right' }) => <svg className="panel-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d={direction === 'left' ? 'm15 5-7 7 7 7' : 'm9 5 7 7-7 7'} /></svg>;
+const TrashIcon = () => <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3m3 0-1 13H7L6 7m4 4v5m4-5v5" /></svg>;
 
 export default function App() {
   const [editor, dispatch] = useReducer(graphReducer, emptyDocument, createEditorState);
@@ -31,6 +32,7 @@ export default function App() {
   const [message, setMessage] = useState<string | null>(null);
   const [panelWidth, setPanelWidth] = useState(() => Math.min(500, Math.max(320, window.innerWidth * .4)));
   const [theme, setTheme] = useState<Theme>(() => localStorage.getItem('dijkstra-theme') === 'dark' ? 'dark' : 'light');
+  const [fullscreen, setFullscreen] = useState(false);
   const [resetViewToken, setResetViewToken] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const workspaceRef = useRef<HTMLDivElement>(null);
@@ -44,6 +46,11 @@ export default function App() {
   const path = useMemo(() => finished && result?.paths[0] ? result.paths[0] : [], [finished, result]);
 
   useEffect(() => { localStorage.setItem('dijkstra-theme', theme); }, [theme]);
+  useEffect(() => {
+    const updateFullscreen = () => setFullscreen(globalThis.document.fullscreenElement === workspaceRef.current);
+    globalThis.document.addEventListener('fullscreenchange', updateFullscreen);
+    return () => globalThis.document.removeEventListener('fullscreenchange', updateFullscreen);
+  }, []);
   useEffect(() => { setStep((current) => Math.min(current, last)); }, [last]);
   useEffect(() => {
     if (finished && !wasFinished.current) setPanelOpen(true);
@@ -71,8 +78,7 @@ export default function App() {
   }, [last, playing, result, step]);
   const removeSelected = useCallback(() => {
     if (!selectedEdges.length && !selectedNodes.length) return;
-    for (const id of selectedEdges) edit({ type: 'delete-edge', id });
-    for (const id of selectedNodes) edit({ type: 'delete-node', id });
+    edit({ type: 'delete-elements', nodeIds: selectedNodes, edgeIds: selectedEdges });
     setSelectedEdges([]); setSelectedNodes([]);
   }, [edit, selectedEdges, selectedNodes]);
   const selectElements = useCallback((nodes: string[], edges: string[]) => {
@@ -83,8 +89,7 @@ export default function App() {
   useEffect(() => {
     const key = (event: KeyboardEvent) => {
       if (event.defaultPrevented || editableTarget(event.target)) return;
-      if (event.code === 'Space' && result) { event.preventDefault(); togglePlaying(); }
-      else if (event.key === 'ArrowLeft') { event.preventDefault(); setIndex(Math.max(0, step - 1)); }
+      if (event.key === 'ArrowLeft') { event.preventDefault(); setIndex(Math.max(0, step - 1)); }
       else if (event.key === 'ArrowRight') { event.preventDefault(); setIndex(Math.min(last, step + 1)); }
       else if (event.key === 'Home') { event.preventDefault(); setIndex(0); }
       else if (event.key === 'End') { event.preventDefault(); setIndex(last); }
@@ -93,7 +98,7 @@ export default function App() {
     };
     window.addEventListener('keydown', key);
     return () => window.removeEventListener('keydown', key);
-  }, [edit, last, removeSelected, result, selectedEdges.length, selectedNodes.length, setIndex, step, togglePlaying]);
+  }, [edit, last, removeSelected, selectedEdges.length, selectedNodes.length, setIndex, step]);
 
   const addNode = useCallback((x: number, y: number) => {
     let number = 1;
@@ -110,6 +115,11 @@ export default function App() {
   const moveNode = useCallback((id: string, x: number, y: number) => edit({ type: 'move-node', id, position: { x, y } }, true), [edit]);
   const renameNode = useCallback((id: string, label: string) => edit({ type: 'rename-node', id, label }), [edit]);
   const updateWeight = useCallback((id: string, weight: number) => edit({ type: 'update-edge', id, weight }), [edit]);
+  const deleteEdge = useCallback((id: string) => { edit({ type: 'delete-edge', id }); setSelectedEdges((current) => current.filter((edgeId) => edgeId !== id)); }, [edit]);
+  const toggleFullscreen = useCallback(() => {
+    if (globalThis.document.fullscreenElement) void globalThis.document.exitFullscreen();
+    else void workspaceRef.current?.requestFullscreen();
+  }, []);
   const toggleTable = useCallback(() => setPanelOpen((current) => {
     const next = !current;
     if (next && window.innerWidth >= 960) setPanelWidth((width) => Math.max(width, Math.min(760, panelMaximum())));
@@ -147,10 +157,10 @@ export default function App() {
   const workspaceStyle = { '--panel-current-w': `${panelWidth}px` } as CSSProperties;
   return <main className={`app theme-${theme}`}><h1 className="sr-only">{vi.appName}</h1><div ref={workspaceRef} style={workspaceStyle} className={`workspace${result && panelOpen ? ' with-panel' : ''}`}>
     <div className="canvas-area">
-      <Canvas document={document} snapshot={snapshot} path={path} theme={theme} onTheme={() => setTheme((value) => value === 'dark' ? 'light' : 'dark')} onAddNode={addNode} onMove={moveNode} onConnect={addEdge} onRename={renameNode} onWeight={updateWeight} onSelect={selectElements} resetViewToken={resetViewToken} />
-      <Toolbar directed={document.graph.directed} canUndo={editor.past.length > 0} canRedo={editor.future.length > 0} onToggle={() => edit({ type: 'toggle-directed' })} onUndo={() => edit({ type: 'undo' })} onRedo={() => edit({ type: 'redo' })} onImport={() => inputRef.current?.click()} onExport={exportFile} onFullscreen={() => void workspaceRef.current?.requestFullscreen()} onReset={resetCanvas} onExample={loadExample} />
+      <Canvas document={document} snapshot={snapshot} path={path} theme={theme} onTheme={() => setTheme((value) => value === 'dark' ? 'light' : 'dark')} onAddNode={addNode} onMove={moveNode} onConnect={addEdge} onRename={renameNode} onWeight={updateWeight} onDeleteEdge={deleteEdge} onSelect={selectElements} selectedNodes={selectedNodes} selectedEdges={selectedEdges} resetViewToken={resetViewToken} />
+      <Toolbar directed={document.graph.directed} canUndo={editor.past.length > 0} canRedo={editor.future.length > 0} fullscreen={fullscreen} onToggle={() => edit({ type: 'toggle-directed' })} onUndo={() => edit({ type: 'undo' })} onRedo={() => edit({ type: 'redo' })} onImport={() => inputRef.current?.click()} onExport={exportFile} onFullscreen={toggleFullscreen} onReset={resetCanvas} onExample={loadExample} />
       {result && <Controls index={step} count={snapshots.length} playing={playing} speed={speed} showTable={panelOpen} onIndex={setIndex} onPlaying={togglePlaying} onSpeed={setSpeed} onTable={toggleTable} />}
-      <div className="selectors floating"><label><span className="selector-label">{vi.source}</span><select value={document.source ?? ''} onChange={(event) => { dispatch({ type: 'set-source', id: event.target.value || null }); setStep(0); setPlaying(false); }}><option value="">{vi.choose}</option>{document.graph.nodes.map((node) => <option value={node.id} key={node.id} disabled={document.target === node.id}>{node.label}</option>)}</select></label><label><span className="selector-label">{vi.target}</span><select value={document.target ?? '__all'} onChange={(event) => { dispatch({ type: 'set-target', id: event.target.value === '__all' ? null : event.target.value }); setStep(0); setPlaying(false); }}><option value="__all">{vi.allNodes}</option>{document.graph.nodes.map((node) => <option value={node.id} key={node.id} disabled={document.source === node.id}>{node.label}</option>)}</select></label></div>
+      <div className="selectors floating"><label><span className="selector-label">{vi.source}</span><select value={document.source ?? ''} onChange={(event) => { dispatch({ type: 'set-source', id: event.target.value || null }); setStep(0); setPlaying(false); }}><option value="">{vi.choose}</option>{document.graph.nodes.map((node) => <option value={node.id} key={node.id} disabled={document.target === node.id}>{node.label}</option>)}</select></label><label><span className="selector-label">{vi.target}</span><select value={document.target ?? '__all'} onChange={(event) => { dispatch({ type: 'set-target', id: event.target.value === '__all' ? null : event.target.value }); setStep(0); setPlaying(false); }}><option value="__all">{vi.allNodes}</option>{document.graph.nodes.map((node) => <option value={node.id} key={node.id} disabled={document.source === node.id}>{node.label}</option>)}</select></label>{(selectedNodes.length > 0 || selectedEdges.length > 0) && <button className="mobile-delete" aria-label={vi.deleteSelection} title={vi.deleteSelection} onClick={removeSelected}><TrashIcon /></button>}</div>
       {(message || editor.error) && <div className="notice" role="status">{message ?? editor.error}<button onClick={() => { setMessage(null); dispatch({ type: 'clear-error' }); }}>{vi.close}</button></div>}
       {result && !panelOpen && <button className="panel-toggle-closed" aria-label={vi.showResult} title={vi.showResult} onClick={toggleTable}><PanelChevron direction="left" /></button>}
     </div>
