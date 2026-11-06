@@ -1,0 +1,63 @@
+:root {
+  --bg: #e6e3dc;
+  --bg-canvas: #eeece7;
+  --bg-subtle: #e5e1d9;
+  --surface: #faf9f6;
+  --surface-elevated: rgba(250, 249, 246, .94);
+  --surface-floating: rgba(250, 249, 246, .94);
+  --surface-floating-hover: #e8e4dc;
+  --border: #cbc6bc;
+  --border-strong: #9b958a;
+  --text: #272a2f;
+  --text-muted: #6f716f;
+  --text-on-dark: #272a2f;
+  --text-on-dark-muted: #73736f;
+  --accent: #176e89;
+  --accent-soft: rgba(23, 110, 137, .14);
+  --accent-warm: #d9653c;
+  --warn: #b65f27;
+  --ok: #257a4b;
+  --error: #bd3f47;
+
+  --node-unvisited-fill: #f5f2eb;
+  --node-unvisited-stroke: #8d887e;
+  --node-unvisited-text: #2f3134;
+  --node-temp-fill: #e6f2f5;
+  --node-temp-stroke: #176e89;
+  --node-temp-text: #253039;
+  --node-perm-fill: #176e89;
+  --node-perm-stroke: #176e89;
+  --node-perm-text: #ffffff;
+  --node-current-ring: #d9653c;
+  --node-path-fill: #257a4b;
+  --node-path-stroke: #257a4b;
+  --node-path-text: #ffffff;
+
+  --cell-fixed-bg: #dceff4;
+  --cell-changed-bg: #f8e8bf;
+  --edge: #8d8981;
+  --edge-active: #d9653c;
+  --edge-path: #257a4b;
+
+  --font-sans: system-ui, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --fs-sm: 12px;
+  --fs-md: 14px;
+  --fs-lg: 16px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --radius-control: 6px;
+  --radius-floating: 10px;
+  --control-h: 36px;
+  --toolbar-h: 48px;
+  --runbar-h: 72px;
+  --panel-w: 500px;
+  --float-offset: 16px;
+  --node-size: 52px;
+  --shadow-popover: 0 10px 28px rgba(42, 40, 35, .15), 0 2px 8px rgba(42, 40, 35, .1);
+}

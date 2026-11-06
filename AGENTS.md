@@ -1,0 +1,40 @@
+# AGENTS.md
+
+## Dự án
+Dijkstra Visualizer: web app tĩnh, giao diện tiếng Việt, trực quan hóa thuật toán Dijkstra theo từng bước, dùng để giảng dạy và tự học.
+Đặc tả đầy đủ: `Đặc tả.md`, `Giao việc cho agent.md` và `Góp ý.md`. Thứ tự ưu tiên khi còn mâu thuẫn: `Góp ý.md` > `Giao việc cho agent.md` > `Đặc tả.md`.
+
+## Công nghệ
+React, TypeScript, Vite, React Flow, Vitest, Playwright. Không backend. Không thêm thư viện khác khi chưa hỏi. Node LTS ghi trong `.nvmrc`.
+
+## Lệnh
+- `npm install`
+- `npm run dev`
+- `npm run test`
+- `npm run e2e`
+- `npm run lint`
+- `npm run build`
+
+## Cấu trúc
+`src/engine` là thuật toán thuần; `src/model` chứa kiểu và reducer; `src/components` chứa UI; `src/presets` chứa ví dụ; `src/i18n` chứa chuỗi; `src/styles` chứa token.
+
+## Quy tắc bắt buộc
+1. `src/engine` không import React hay thư viện giao diện.
+2. Kiểu dùng chung nằm ở `src/model/types.ts`.
+3. Chuỗi tiếng Việt hiển thị nằm trong `src/i18n/vi.ts`.
+4. Màu, cỡ chữ, khoảng cách lấy từ `src/styles/tokens.css`.
+5. Control bo 6px, thanh nổi bo 10px; không gradient trang trí, emoji, glassmorphism hay thư viện icon. Play/Pause và bàn phím dùng SVG nội tuyến có nhãn truy cập. Hỗ trợ theme sáng/tối đồng bộ và lưu lựa chọn.
+6. Preset phải khớp `Giao việc cho agent.md`; không sửa số liệu.
+7. Không giả định ID node bắt đầu từ 1.
+8. Trước khi báo xong phải chạy lint, test, build và e2e; không để `console.log`, code chết hay TODO vô chủ.
+9. Nguồn và đích cụ thể phải khác nhau; `target = null` là chế độ chạy tới tất cả node.
+10. Desktop có splitter cho panel, bảng không có scrollbar riêng; overflow thuộc toàn vùng kết quả.
+11. Toolbar không có tên Dijkstra hoặc nút Thêm node/Thêm cạnh/Xóa. App mở canvas trống, không empty overlay; Reset tạo canvas trống, Thêm ví dụ nạp VD1.
+12. Ở chế độ Chọn: nhấp đúp canvas thêm node mà không zoom, click node chỉ chọn, double-click sửa tên, kéo bốn handle để tạo cạnh, `Backspace` xóa selection; xóa node kéo theo cạnh.
+13. Node/cạnh phải đi theo con trỏ trong lúc kéo; cạnh ưu tiên đường thẳng, trọng số hiển thị trực tiếp trên cạnh.
+14. Panel đóng mặc định, Hiện bảng mở toàn panel và snapshot done tự mở; separator có nút đóng/mở.
+15. Tối ưu đồng thời phép gán handle cho tối đa bốn incident edges để không đảo/cắt chéo; trên bốn cạnh dùng handle gần góc nhất.
+16. Chevron panel và bàn phím dùng SVG màu tương phản ở dark mode. Kết quả/Phân tích chỉ có border ở surface ngoài, không ở element con.
+17. Play ở snapshot cuối phải về 0 và chạy lại. Node không vẽ ∞ hoặc marker t; chỉ giữ marker nguồn s.
+18. LabelTable đứng trước DetailedExplanation; không còn Explanation snapshot đơn. Diễn giải sinh lũy tiến và chỉ truy vết khi done.
+19. Toàn bộ Kết quả, Bảng bước giải và Diễn giải phải hiển thị `node.label`, không lộ ID nội bộ. Bảng bước giải chỉ để đọc, không có button/click để đổi snapshot; điều hướng dùng runbar hoặc phím tắt.
