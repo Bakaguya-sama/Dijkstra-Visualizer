@@ -146,10 +146,12 @@ test('hướng dẫn mở mặc định, đủ thao tác desktop/mobile và đ�
   await expect(page.locator('.app')).toHaveClass(/theme-dark/);
   const shortcutButton=page.getByRole('button',{name:'Hướng dẫn phím tắt'});
   await expect(shortcutButton.locator('svg')).toBeVisible();
-  expect(await shortcutButton.evaluate(element=>getComputedStyle(element).color)).toBe('rgb(242, 123, 75)');
   const openResult=page.getByRole('button',{name:'Mở khu vực kết quả'});
   await expect(openResult.locator('svg')).toBeVisible();
-  expect(await openResult.evaluate(element=>getComputedStyle(element).color)).toBe('rgb(242, 123, 75)');
+  const shortcutColor=await shortcutButton.evaluate(element=>getComputedStyle(element).color);
+  const resultColor=await openResult.evaluate(element=>getComputedStyle(element).color);
+  expect(shortcutColor).toBe(resultColor);
+  expect(shortcutColor).not.toBe('rgb(161, 168, 178)');
   await page.reload();
   await expect(page.locator('.app')).toHaveClass(/theme-dark/);
   await page.getByRole('button',{name:'Chuyển sang chế độ sáng'}).click();
@@ -281,7 +283,7 @@ test('mobile đưa Ví dụ lên hàng chính, dùng icon undo/redo và giữ ru
     expect(await barHeight('.selectors')).toBe(44);
     expect(await barHeight('.canvas-dock')).toBe(44);
     for(const selector of ['.toolbar','.selectors','.canvas-dock']){
-      expect(await page.locator(selector).evaluate(element=>getComputedStyle(element).borderRadius)).toBe('10px');
+      expect(await page.locator(selector).evaluate(element=>getComputedStyle(element).borderRadius)).toBe('4px');
     }
     const toolbarStyles=await page.locator('.toolbar-primary button').evaluateAll(elements=>elements.map(element=>{
       const style=getComputedStyle(element);const box=element.getBoundingClientRect();

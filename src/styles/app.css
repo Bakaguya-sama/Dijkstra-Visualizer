@@ -211,8 +211,8 @@ tbody tr:nth-child(even) > * { background: var(--bg-subtle); }
     --m-bar-h: 44px;
     --m-runbar-h: 48px;
     --m-control-h: 34px;
-    --m-radius: 10px;
-    --m-control-radius: 7px;
+    --m-radius: 4px;
+    --m-control-radius: 4px;
   }
   .canvas-area {
     --float-offset: var(--m-gap);
