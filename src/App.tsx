@@ -28,6 +28,7 @@ export default function App() {
   const [selectedEdges, setSelectedEdges] = useState<string[]>([]);
   const [step, setStep] = useState(0);
   const [playing, setPlaying] = useState(false);
+  const [speed, setSpeed] = useState(1);
   const [mode, setMode] = useState<EditorMode>('select');
   const [toolbarMoreOpen, setToolbarMoreOpen] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
@@ -63,9 +64,9 @@ export default function App() {
     const timer = window.setInterval(() => setStep((current) => {
       if (current >= last) { setPlaying(false); return current; }
       return current + 1;
-    }), 700);
+    }), 700 / speed);
     return () => window.clearInterval(timer);
-  }, [playing, last]);
+  }, [playing, last, speed]);
 
   const edit = useCallback((action: EditorAction, layoutOnly = false) => {
     if (!layoutOnly && (step > 0 || playing)) { setMessage(vi.editReset); setStep(0); setPlaying(false); }
@@ -164,7 +165,7 @@ export default function App() {
     <div className={`canvas-area${toolbarMoreOpen?' toolbar-expanded':''}`}>
       <Canvas document={document} snapshot={snapshot} path={path} theme={theme} onTheme={() => setTheme((value) => value === 'dark' ? 'light' : 'dark')} onAddNode={addNode} onMove={moveNode} onConnect={addEdge} onRename={renameNode} onWeight={updateWeight} onDeleteEdge={deleteEdge} onSelect={selectElements} selectedNodes={selectedNodes} selectedEdges={selectedEdges} resetViewToken={resetViewToken} mode={mode} />
       <Toolbar directed={document.graph.directed} canUndo={editor.past.length > 0} canRedo={editor.future.length > 0} fullscreen={fullscreen} onToggle={() => edit({ type: 'toggle-directed' })} onUndo={() => edit({ type: 'undo' })} onRedo={() => edit({ type: 'redo' })} onImport={() => inputRef.current?.click()} onExport={exportFile} onFullscreen={toggleFullscreen} onReset={resetCanvas} onExample={loadExample} mode={mode} onMode={changeMode} moreOpen={toolbarMoreOpen} onMore={() => setToolbarMoreOpen((open)=>!open)} theme={theme} onTheme={() => setTheme((value) => value === 'dark' ? 'light' : 'dark')} onHelp={toggleHelp} />
-      {result && <Controls index={step} count={snapshots.length} playing={playing} showTable={panelOpen} onIndex={setIndex} onPlaying={togglePlaying} onTable={toggleTable} />}
+      {result && <Controls index={step} count={snapshots.length} playing={playing} speed={speed} showTable={panelOpen} onIndex={setIndex} onPlaying={togglePlaying} onSpeed={setSpeed} onTable={toggleTable} />}
       <div className="selectors floating"><label><span className="selector-label">{vi.source}</span><select value={document.source ?? ''} onChange={(event) => { dispatch({ type: 'set-source', id: event.target.value || null }); setStep(0); setPlaying(false); }}><option value="">{vi.choose}</option>{document.graph.nodes.map((node) => <option value={node.id} key={node.id} disabled={document.target === node.id}>{node.label}</option>)}</select></label><label><span className="selector-label">{vi.target}</span><select value={document.target ?? '__all'} onChange={(event) => { dispatch({ type: 'set-target', id: event.target.value === '__all' ? null : event.target.value }); setStep(0); setPlaying(false); }}><option value="__all">{vi.allNodes}</option>{document.graph.nodes.map((node) => <option value={node.id} key={node.id} disabled={document.source === node.id}>{node.label}</option>)}</select></label>{(selectedNodes.length > 0 || selectedEdges.length > 0) && <button className="mobile-delete" aria-label={vi.deleteSelection} title={vi.deleteSelection} onClick={removeSelected}><TrashIcon /></button>}</div>
       {(message || editor.error) && <div className="notice" role="status">{message ?? editor.error}<button onClick={() => { setMessage(null); dispatch({ type: 'clear-error' }); }}>{vi.close}</button></div>}
       {result && !panelOpen && <button className="panel-toggle-closed" aria-label={vi.showResult} title={vi.showResult} onClick={toggleTable}><span className="panel-toggle-label">{vi.result}</span><PanelChevron direction="left" /></button>}

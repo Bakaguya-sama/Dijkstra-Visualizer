@@ -71,6 +71,7 @@ button:focus-visible, select:focus-visible, input:focus-visible, [role="separato
 .transport-group { display: flex; align-items: center; gap: var(--space-1); }
 .transport, .play-button { min-width: 36px; padding: 0 var(--space-1); font-family: var(--font-mono); font-size: var(--fs-lg); }
 .play-button { color: var(--accent-warm) !important; }
+.playback-speed { min-width: 58px; padding-inline: var(--space-2); font-family: var(--font-mono); }
 .playback-icon { width: 20px; height: 20px; display: block; fill: currentColor; }
 .step-counter { min-width: 68px; text-align: center; color: var(--text-on-dark); font-family: var(--font-mono); font-size: var(--fs-lg); font-weight: 700; }
 .table-toggle { min-width: max-content; }

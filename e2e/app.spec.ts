@@ -35,6 +35,10 @@ test('chạy preset A, điều hướng và bảng bước giải', async ({ pag
   await expect(page.locator('.result-status')).toHaveCount(0);
   await expect(page.getByText('Tốc độ',{exact:true})).toHaveCount(0);
   await expect(page.locator('.run-status')).toHaveCount(0);
+  const speed=page.getByRole('combobox',{name:'Tốc độ chạy'});
+  await expect(speed).toHaveValue('1');
+  await speed.selectOption('2');
+  await expect(speed).toHaveValue('2');
   const tableScroll=page.locator('.table-scroll');
   expect(await tableScroll.evaluate(element=>getComputedStyle(element).overflowX)).toBe('auto');
   expect(await tableScroll.evaluate(element=>getComputedStyle(element).borderTopWidth)).toBe('0px');

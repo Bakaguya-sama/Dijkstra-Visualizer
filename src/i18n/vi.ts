@@ -6,7 +6,7 @@ export const vi = {
   fullscreen: 'Toàn màn hình', exitFullscreen: 'Thoát toàn màn hình', reset: 'Reset', resetCanvas: 'Làm mới thành canvas trống',
   source: 'Nguồn', target: 'Đích', allNodes: 'Tất cả node', choose: 'Chưa chọn',
   start: 'Về bước đầu', previous: 'Lùi một bước', next: 'Tới một bước', end: 'Tới bước cuối',
-  play: 'Chạy', pause: 'Dừng',
+  play: 'Chạy', pause: 'Dừng', playbackSpeed: 'Tốc độ chạy',
   more: 'Khác', moreTools: 'Mở thêm công cụ', hideMoreTools: 'Ẩn bớt công cụ',
   showResultPanel: 'Hiện kết quả', hideResultPanel: 'Ẩn kết quả',
   showResult: 'Mở khu vực kết quả', hideResult: 'Đóng khu vực kết quả',
