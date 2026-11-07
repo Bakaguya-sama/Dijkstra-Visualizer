@@ -261,7 +261,7 @@ test('hai cạnh cùng cặp node dùng hai làn riêng trên viền node', asyn
 });
 
 test('mobile dùng toolbar hai tầng nhỏ gọn, runbar đủ tiến độ và kết quả toàn vùng', async ({ page }, testInfo) => {
-  for (const viewport of [{width:360,height:740},{width:390,height:844},{width:430,height:932}]) {
+  for (const viewport of [{width:360,height:740},{width:390,height:844},{width:430,height:932},{width:620,height:870}]) {
     await page.setViewportSize(viewport);
     await page.goto('/');
     await page.locator('.shortcut-popover').getByRole('button',{name:'Đóng'}).click();
@@ -297,6 +297,7 @@ test('mobile dùng toolbar hai tầng nhỏ gọn, runbar đủ tiến độ và
 
     await page.getByLabel('Chọn file JSON').setInputFiles({name:'mobile-toolbar.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify({version:1,directed:false,nodes:[{id:'1',label:'1',x:100,y:200},{id:'2',label:'2',x:300,y:200}],edges:[{id:'e1',from:'1',to:'2',weight:1}],source:'1',target:'2'}))});
     expect(await barHeight('.runbar')).toBe(48);
+    await expect(page.locator('.runbar .table-toggle')).toBeHidden();
     const toolbarBox=await page.locator('.toolbar').boundingBox();
     const runbarBox=await page.locator('.runbar').boundingBox();
     const selectorsBox=await page.locator('.selectors').boundingBox();
@@ -311,6 +312,13 @@ test('mobile dùng toolbar hai tầng nhỏ gọn, runbar đủ tiến độ và
     expect(rangeBox.y+rangeBox.height).toBeLessThanOrEqual(runbarBox.y+runbarBox.height+2);
     await expect(page.getByRole('combobox',{name:'Tốc độ chạy'})).toHaveValue('1');
     await expect(page.locator('.canvas-dock')).toBeHidden();
+    expect(selectorsBox.width).toBeLessThanOrEqual(380.5);
+    const selectorLayout=await page.locator('.selectors label').evaluateAll(elements=>elements.map(element=>{
+      const label=element.querySelector('.selector-label') as HTMLElement;
+      const select=element.querySelector('select') as HTMLSelectElement;
+      return {labelFits:label.scrollWidth<=label.clientWidth,selectWidth:select.getBoundingClientRect().width};
+    }));
+    expect(selectorLayout.every(item=>item.labelFits&&item.selectWidth<=150)).toBe(true);
     await expect(page.locator('.react-flow__edge[data-id="e1"] .react-flow__edge-path')).toHaveCount(1);
     await expect(page.locator('.edge-label')).toHaveCount(1);
     expect(await page.locator('.react-flow__edge[data-id="e1"] .react-flow__edge-path').getAttribute('marker-end')).toBeNull();
