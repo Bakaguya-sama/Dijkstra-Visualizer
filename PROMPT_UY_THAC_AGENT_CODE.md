@@ -97,7 +97,7 @@ Nếu repo mới chỉ có tài liệu, bắt đầu từ T0. Nếu đã có cod
 - Khi panel mở ở bất kỳ step nào, `Result`, `LabelTable` và `DetailedExplanation` đều nhận snapshot cuối: hiện ngay kết quả cuối, toàn bộ bảng, các bước giải và truy vết. Canvas/runbar vẫn dùng snapshot hiện tại. Không còn `Explanation` snapshot đơn.
 - Engine và snapshot dùng NodeId, nhưng mọi nội dung nhìn thấy trong Kết quả, Bảng bước giải và DetailedExplanation phải ánh xạ sang `node.label` do người dùng nhập: tiêu đề cột, đỉnh cố định, predecessor, phép cập nhật, path và trace. Chỉ fallback ID khi không tìm thấy label.
 - Bảng bước giải chỉ để đọc: không callback nhảy bước, không `onClick` trên hàng/ô và không button cho số bước. Không sticky ngang cột Bước/Đỉnh cố định; cuộn ngang kéo toàn bảng, chỉ header sticky theo chiều dọc.
-- Runbar theo bố cục: `|‹`, `‹`, bộ đếm hiện tại/tổng, `›`, `›|`, phân cách, chạy/dừng, select chỉ hiện `0.5x/1x/1.5x/2x` và bật/tắt Kết quả; range nằm sát đáy nhưng không bị cắt. Không có chữ Tốc độ hoặc Hoàn tất/Đang chạy.
+- Runbar desktop theo bố cục: `|‹`, `‹`, bộ đếm hiện tại/tổng, `›`, `›|`, phân cách, chạy/dừng, select chỉ hiện `0.5x/1x/1.5x/2x` và bật/tắt Kết quả. Dưới 768px ẩn riêng nút Kết quả trong runbar; nút Kết quả ở hàng đáy mở panel. Range nằm sát đáy nhưng không bị cắt.
 - “Cuối” nhảy tới snapshot `done`; “Đầu” về snapshot 0. Khi đang auto-play, mọi thao tác điều hướng khác phải dừng play trước.
 - Khi đang ở snapshot cuối và bấm Chạy, đưa step về 0 rồi autoplay lại; ở giữa tiến trình tiếp tục từ bước hiện tại. Không đăng ký Space global; Space chỉ kích hoạt button theo hành vi native sau khi Play/Pause được focus/click.
 - Sửa dữ liệu graph khi đang ở snapshot khác 0 hoặc đang play: dừng play, áp dụng thay đổi, tái tạo kết quả và đưa phiên chạy về snapshot 0, đồng thời báo ngắn gọn. Chỉ kéo vị trí node không làm chạy lại engine.
@@ -112,7 +112,7 @@ Nếu repo mới chỉ có tài liệu, bắt đầu từ T0. Nếu đã có cod
 - Desktop toolbar phải nằm trọn trong canvas khi kéo splitter; nếu thiếu chỗ thì cuộn ngang nội bộ, không tràn qua panel kết quả.
 - Dưới 768px, toolbar mobile hai tầng dùng surface bo 10px và control bo 7px. Hàng chính cao 44px chia đều Chọn, Nối cạnh, Hoàn tác, Làm lại và nút ba chấm đứng; tầng dưới cuộn ngang chứa hướng đồ thị, Nhập, Xuất, Toàn màn hình, Reset, Thêm ví dụ và theme, đồng thời đẩy runbar xuống.
 - Mobile bỏ icon bàn phím và note **Xem hướng dẫn tại đây →**; nút chữ **Hướng dẫn** ở góc phải dưới mở lại popover cảm ứng.
-- Cụm Nguồn/Đích mobile dùng CSS grid `minmax(0,1fr) minmax(0,1fr) auto`; label 12px nằm cùng hàng với giá trị 14px, mỗi select rộng tối thiểu 120px ở viewport 390, nút xóa 44×44px ở cột cuối và khoảng trống tới mép phải không quá 12px.
+- Cụm Nguồn/Đích mobile căn giữa, tối đa 360px thường và 380px khi có nút xóa. Bên trong mỗi nhóm dùng grid nhãn `max-content` + giá trị `minmax(0,1fr)` để nhãn không bị lấn; mỗi select vẫn rộng tối thiểu 120px ở viewport 390 khi có nút xóa 44×44px.
 - Zoom mobile chỉ còn `− 125% +`; khi runbar 48px xuất hiện thì ẩn zoom. Nút Kết quả đóng nằm bên trái nút Hướng dẫn và không giao nhau; khi mở, panel Kết quả dùng toàn bộ vùng còn lại dưới toolbar/runbar và tự cuộn.
 - Nút xóa mobile phải là button 44×44px có border 1px đủ bốn cạnh, không chỉ có divider/border trái.
 - Khu Kết quả/Phân tích chỉ có border ở surface ngoài; bỏ border khỏi badge, card, wrapper và cell bảng, dùng background/spacing/sticky/highlight để phân cấp.
@@ -168,7 +168,7 @@ Ngoài toàn bộ điều kiện nghiệm thu T0–T6 trong `Giao việc cho age
 - Test nguồn/đích trùng bị từ chối ở validation, reducer và import; graph một node chạy được với `target = null`.
 - Serialize round-trip giữ nguyên graph, layout, source, target và edge ID; preset thiếu edge ID vẫn import được.
 - Component/E2E test không phụ thuộc animation timing tùy tiện; ưu tiên trạng thái/role/text/test-id ổn định.
-- Playwright ít nhất gồm: chỉnh sửa graph; chạy preset A và kiểm snapshot 5, 7, 11; bật/tắt bảng; điều hướng lùi/tới; import/export; mobile drawer; desktop 1280×800 và mobile 360×740, 390×844, 430×932; không có horizontal page overflow.
+- Playwright ít nhất gồm: chỉnh sửa graph; chạy preset A và kiểm snapshot 5, 7, 11; bật/tắt bảng; điều hướng lùi/tới; import/export; mobile drawer; desktop 1280×800 và mobile 360×740, 390×844, 430×932, 620×870; không có horizontal page overflow.
 - Playwright kiểm thêm initial 0 node/no overlay, Thêm ví dụ nạp sáu node, replay cuối→0, không ∞/t nhưng có s, selectors thoáng, bảng trước diễn giải, không heading Giải thích bước, có khởi tạo/từng bước/truy vết; cùng splitter, anchor, dark mode, chỉnh sửa, import/export và responsive.
 - Playwright import graph có ID khác label, rồi xác nhận cả ba vùng panel chỉ dùng label; bảng không có button/click navigation và bấm một hàng không đổi snapshot.
 - Playwright kiểm handle luôn ẩn; mode Nối cạnh tạo cạnh bằng hai click; thanh cạnh −/sửa/+/xóa; Shift multi-delete; bảng không sticky ngang và tự cuộn trong zone; fullscreen vào/thoát; Space không global; hướng dẫn trong menu Khác; Result không badge/trace; hai cạnh đối hướng tách làn/nhãn; thùng rác mobile luôn nằm trong viewport.

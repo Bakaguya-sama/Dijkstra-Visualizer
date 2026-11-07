@@ -1,70 +1,47 @@
-# Góp ý giao diện vòng 13 — đã triển khai
+# Góp ý giao diện vòng 14 — đã triển khai
 
 Ngày cập nhật: 07/11/2026
 
-Phạm vi: tốc độ chạy, toolbar/runbar mobile, nút Hướng dẫn và panel Kết quả.
+Phạm vi: runbar mobile và cụm chọn Nguồn/Đích.
 
-## 1. Yêu cầu đã chốt
+## 1. Yêu cầu
 
-- Thêm điều chỉnh tốc độ nhưng phần nhìn thấy chỉ là `0.5x`, `1x`, `1.5x`, `2x`; không hiện chữ **Tốc độ**.
-- Khôi phục toolbar mobile hai tầng: hàng chính chia đều, nút ba chấm đứng mở tầng công cụ dưới.
-- Mobile bo cong, thu nhỏ control/chữ/viền để giao diện thanh thoát và không chồng lấn.
-- Progress runbar phải nhìn thấy đầy đủ, không bị surface cắt.
-- Nút mở hướng dẫn mobile dùng chữ **Hướng dẫn** ở góc phải dưới thay icon.
-- Khi mở, khu vực Kết quả dùng toàn bộ vùng còn lại và cho phép cuộn tới đủ Result, Bảng bước giải, Diễn giải.
-- Vừa triển khai vừa chụp ảnh Playwright để tự đối chiếu và sửa tiếp.
-- Sau mỗi nhóm thay đổi hoàn chỉnh phải tạo commit riêng và ghi vào tài liệu vận hành.
+- Bỏ nút **Kết quả** khỏi thanh tiến trình trên giao diện mobile.
+- Thu gọn khối chọn node nguồn và node đích; không để surface phủ gần hết chiều ngang ở thiết bị rộng.
+- Thiết kế lại nhãn và vùng giá trị để select không lấn, cắt hoặc làm mất chữ **Nguồn/Đích**.
+- Đối chiếu trực tiếp với ảnh 620×870 do người dùng cung cấp.
 
-## 2. Thiết kế mobile cuối cùng
+## 2. Giải pháp đã triển khai
 
-- Hàng chính toolbar cao 44px, surface bo 10px; bốn action chia đều và nút ba chấm rộng 34px ở mép phải.
-- Tầng dưới nằm trong cùng surface, toolbar mở cao 82px; control cao 32px, font 12px, cuộn ngang ẩn scrollbar.
-- Thứ tự tầng dưới: Vô/Có hướng, Nhập, Xuất, Toàn màn hình, Reset, Thêm ví dụ, theme.
-- Runbar cao 48px; transport rộng 28px, Play 32px, speed 48px, Kết quả 52px. Range cao 14px nằm sát đáy và được phép tràn 1px để thumb không bị cắt.
-- Select tốc độ có accessible name **Tốc độ chạy** nhưng chỉ hiển thị hệ số.
-- Nguồn/Đích giữ một hàng 44px; select vẫn đạt tối thiểu 120px tại 390px khi có nút xóa 44×44px.
-- Khi có runbar, zoom ẩn. Ở đáy, Kết quả nằm bên trái và Hướng dẫn 96px nằm bên phải, cách nhau 8px.
-- Panel Kết quả mở từ dưới runbar tới cách đáy 8px; nội dung cuộn dọc trong panel.
+- `.runbar .table-toggle` bị ẩn dưới 768px; nút **Kết quả** ở hàng đáy vẫn giữ và là điểm mở panel duy nhất trên mobile.
+- Cụm `.selectors` căn giữa, rộng tối đa 360px ở trạng thái thường thay vì kéo từ mép trái tới mép phải.
+- Khi xuất hiện nút xóa 44×44px, surface tự nới tối đa 380px để giữ đủ không gian cho hai select.
+- Mỗi nhóm dùng grid hai cột: nhãn `max-content` và giá trị `minmax(0, 1fr)`; nhãn font 10px, gap 2px, padding trái 3px.
+- Vùng select có chiều rộng tối đa khoảng 150px ở trạng thái thường; nhãn luôn hiển thị trọn.
+- Tại viewport 390px khi có nút xóa, mỗi select vẫn rộng ít nhất 120px và nút xóa giữ đủ bốn cạnh border.
 
-## 3. File đã thay đổi
+## 3. File thay đổi
 
-- `src/App.tsx`: state tốc độ và interval autoplay theo hệ số.
-- `src/components/Controls.tsx`: select speed dạng hệ số.
-- `src/components/Toolbar.tsx`: nút ba chấm đứng và thứ tự/class tầng hai.
-- `src/components/ShortcutHelp.tsx`: thêm nhãn chữ Hướng dẫn cho mobile.
-- `src/i18n/vi.ts`: accessible label tốc độ.
-- `src/styles/app.css`: toàn bộ kích thước, radius, bố cục hai tầng, runbar/progress, nút đáy và panel mobile.
-- `e2e/app.spec.ts`: đo/chụp ba viewport, speed, progress, không giao nhau và panel toàn vùng.
-- Tài liệu: `AGENTS.md`, `README.md`, `Đặc tả.md`, `Giao việc cho agent.md`, `PROMPT_UY_THAC_AGENT_CODE.md`, `Vận hành.md`.
+- `src/styles/app.css`
+- `e2e/app.spec.ts`
+- `Góp ý.md`, `Đặc tả.md`, `Giao việc cho agent.md`, `PROMPT_UY_THAC_AGENT_CODE.md`, `README.md`, `AGENTS.md`, `Vận hành.md`
 
-## 4. Đối chiếu ảnh và nghiệm thu
+## 4. Kiểm tra bằng ảnh và Playwright
 
-Playwright sinh ảnh sau thay đổi tại:
+- Thêm viewport 620×870 đúng tỷ lệ ảnh tham chiếu, bên cạnh 360×740, 390×844, 430×932.
+- Ảnh sau thay đổi: `mobile-compact-620x870.png` và `mobile-result-620x870.png` trong artifact Playwright.
+- [x] Runbar mobile không còn nút Kết quả.
+- [x] Nút Kết quả ở đáy vẫn mở được toàn panel.
+- [x] Selectors thường không rộng quá 360px; trạng thái có nút xóa không quá 380px.
+- [x] Nhãn Nguồn/Đích không bị cắt.
+- [x] Vùng giá trị trạng thái thường không rộng quá 150px.
+- [x] Select đạt tối thiểu 120px ở 390px khi có nút xóa.
+- [x] Không phát sinh cuộn ngang trang hoặc giao nhau với control đáy.
 
-- `mobile-compact-360x740.png`, `mobile-compact-390x844.png`, `mobile-compact-430x932.png`.
-- `mobile-result-360x740.png`, `mobile-result-390x844.png`, `mobile-result-430x932.png`.
+## 5. Commit
 
-Kết quả quan sát:
+- `08e8dc3` — `fix: compact mobile endpoint controls`
 
-- [x] Hàng chính phủ kín chiều ngang, không còn khoảng trống dư bên phải.
-- [x] Ba chấm đứng hiển thị bằng ba dot CSS thật, không phụ thuộc glyph font.
-- [x] Tầng dưới không chồng runbar và cuộn ngang được.
-- [x] Transport/runbar nhỏ gọn, speed chỉ hiện hệ số.
-- [x] Track và thumb progress nhìn thấy đầy đủ.
-- [x] Kết quả và Hướng dẫn nằm cùng hàng, cách nhau 8px; Hướng dẫn không xuống dòng.
-- [x] Panel mở hiển thị Kết quả, Bảng và phần đầu Diễn giải, phần còn lại truy cập bằng cuộn dọc.
-- [x] Không cuộn ngang trang ở 360×740, 390×844, 430×932.
-- [ ] Cần nghiệm thu thêm trên điện thoại thật có notch/safe-area; Playwright desktop không mô phỏng đầy đủ phần cứng.
-
-## 5. Xác minh bắt buộc
-
-```text
-npm run lint
-npm run test
-npm run build
-npm run e2e
-```
-
-Kết quả cuối và các commit liên quan được ghi trong `Vận hành.md`.
+Kết quả kiểm tra cuối và lịch sử vận hành được ghi trong `Vận hành.md`.
 
 Kết quả lần chạy cuối: lint PASS; 24/24 unit test PASS; production build PASS; 17/17 Playwright E2E PASS.

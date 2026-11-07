@@ -154,7 +154,7 @@ Node chưa có khoảng cách hữu hạn không hiện `∞`; node đích khôn
 
 Hướng dẫn tự mở khi tải trang. Desktop hiển thị phím tắt chuột/bàn phím và giữ nút SVG bàn phím; mobile tự chuyển sang **Hướng dẫn thao tác trên điện thoại** với mode Chọn/Nối cạnh, cách chạm, chạm đúp, chỉnh/xóa phần tử, kéo/chụm canvas và điều khiển thuật toán. Trên mobile không có icon/note hướng dẫn cố định; nút chữ **Hướng dẫn** ở góc phải dưới mở lại popover.
 
-Trên mobile dưới 768px, toolbar có hai tầng bo tròn: hàng chính chia đều **Chọn · Nối cạnh · Hoàn tác · Làm lại · ⋮**; chạm nút ba chấm mở tầng dưới cuộn ngang với hướng đồ thị, Nhập, Xuất, Toàn màn hình, Reset, Thêm ví dụ và theme. Runbar thu gọn nhưng vẫn hiện đầy đủ progress và select tốc độ dạng `1x/2x`. Nguồn/Đích nằm cùng một hàng; khi chạy, zoom ẩn để dành chỗ cho **Kết quả** và **Hướng dẫn** ở đáy. Khi mở Kết quả, panel dùng toàn bộ vùng còn lại dưới toolbar/runbar và tự cuộn, không che control trên.
+Trên mobile dưới 768px, toolbar có hai tầng bo tròn: hàng chính chia đều **Chọn · Nối cạnh · Hoàn tác · Làm lại · ⋮**; chạm nút ba chấm mở tầng dưới cuộn ngang với hướng đồ thị, Nhập, Xuất, Toàn màn hình, Reset, Thêm ví dụ và theme. Runbar thu gọn, hiện progress và tốc độ dạng `1x/2x`, nhưng không lặp nút Kết quả. Cụm Nguồn/Đích căn giữa, tối đa 360px; khi có nút xóa có thể nới tới 380px. Nhãn nằm ở cột riêng nên không bị giá trị select lấn mất. Khi chạy, zoom ẩn để dành chỗ cho **Kết quả** và **Hướng dẫn** ở đáy. Khi mở Kết quả, panel dùng toàn bộ vùng còn lại dưới toolbar/runbar và tự cuộn.
 
 Nút **Toàn màn hình** hoạt động hai chiều: bấm lần đầu để vào và bấm lại để thoát. Nếu thoát bằng `Escape`, nhãn nút cũng tự đồng bộ.
 

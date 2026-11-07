@@ -632,3 +632,14 @@ Mục này thắng phần mobile một hàng, nút Khác, radius 4px và autopla
 7. Khi mở trên mobile, panel Kết quả có top ngay dưới toolbar + runbar và bottom 8px; dùng toàn bộ vùng còn lại, panel-content tự cuộn để truy cập đủ Result, Bảng và Diễn giải.
 8. Playwright chụp và đo tại 360×740, 390×844, 430×932: hàng chính kín chiều ngang, toolbar mở cao 82px, runbar cao 48px, progress nằm trong vùng nhìn thấy, Kết quả/Hướng dẫn không giao nhau, panel mở dùng toàn vùng và trang không overflow ngang.
 9. Sau mỗi nhóm thay đổi hoàn chỉnh, chạy kiểm tra liên quan và commit riêng. Ghi hash, phạm vi và kết quả test của commit chức năng vào `Vận hành.md`; không push nếu chưa được yêu cầu.
+
+## 19. Điều chỉnh sau vòng góp ý giao diện 14
+
+Mục này thắng các mô tả cũ về nút Kết quả trong runbar và chiều rộng selectors mobile:
+
+1. Dưới 768px ẩn `.runbar .table-toggle`; không xóa nút Kết quả desktop. Mobile chỉ dùng nút Kết quả ở hàng đáy để mở panel.
+2. `.selectors` mobile căn giữa bằng `left: 50%` và `translateX(-50%)`, rộng `min(360px, calc(100% - 16px))` khi không có selection.
+3. Khi có `.mobile-delete`, selectors được phép rộng `min(380px, calc(100% - 16px))` để giữ hai select đủ rộng và nút xóa 44×44px.
+4. Mỗi label dùng grid `max-content minmax(0, 1fr)`. Nhãn Nguồn/Đích có cột riêng, không co mất chữ; select chiếm phần còn lại và không phủ nhãn.
+5. Ở trạng thái thường, mỗi vùng select không rộng quá 150px. Tại 390px khi có nút xóa, mỗi select vẫn đạt ít nhất 120px.
+6. Playwright phải kiểm tra thêm 620×870 theo ảnh người dùng, cùng 360×740, 390×844, 430×932; xác nhận runbar mobile không có Kết quả, selectors đúng max-width, nhãn vừa cột và không overflow trang.

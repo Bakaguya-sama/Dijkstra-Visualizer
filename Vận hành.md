@@ -15,6 +15,7 @@
 | `c51bfd2` | Mốc giao diện và tài liệu vòng 12 trước khi bắt đầu yêu cầu mới | lint, 24 unit test, build, 17 E2E đã pass ở lượt trước |
 | `6406ce8` | Thêm speed `0.5x/1x/1.5x/2x`, thay interval autoplay và test control | lint pass, 24 unit test pass, E2E preset pass |
 | `288d076` | Khôi phục toolbar mobile hai tầng, thu gọn runbar, hiện progress, nút Hướng dẫn chữ và panel Kết quả toàn vùng | lint pass; 3 E2E responsive/splitter pass; ảnh 360/390/430px đã xem trực tiếp |
+| `08e8dc3` | Bỏ Kết quả khỏi runbar mobile; thu selectors thường còn 360px và trạng thái có nút xóa tối đa 380px | lint pass; 2 E2E mobile pass; ảnh 620×870 đã xem trực tiếp |
 
 ## Checklist bàn giao vòng 13
 
@@ -33,3 +34,5 @@
 | `npm run test` | PASS — 24/24 |
 | `npm run build` | PASS — TypeScript + Vite production build |
 | `npm run e2e` | PASS — 17/17 |
+
+Các kết quả trên được chạy lại sau commit `08e8dc3`, bao gồm phép đo mới ở viewport 620×870.
