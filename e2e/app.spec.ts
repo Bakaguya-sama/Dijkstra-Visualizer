@@ -260,7 +260,7 @@ test('hai cạnh cùng cặp node dùng hai làn riêng trên viền node', asyn
   await page.screenshot({path:testInfo.outputPath('hai-lan-canh-tren-vien.png'),fullPage:true});
 });
 
-test('mobile dùng toolbar hai tầng nhỏ gọn, runbar đủ tiến độ và kết quả toàn vùng', async ({ page }, testInfo) => {
+test('mobile đưa Ví dụ lên hàng chính, dùng icon undo/redo và giữ runbar đầy đủ', async ({ page }, testInfo) => {
   for (const viewport of [{width:360,height:740},{width:390,height:844},{width:430,height:932},{width:620,height:870}]) {
     await page.setViewportSize(viewport);
     await page.goto('/');
@@ -269,8 +269,12 @@ test('mobile dùng toolbar hai tầng nhỏ gọn, runbar đủ tiến độ và
     const helpButton=page.getByRole('button',{name:'Hướng dẫn phím tắt'});
     await expect(helpButton).toBeVisible();
     await expect(helpButton).toHaveText('Hướng dẫn');
-    for (const name of ['Chọn','Nối cạnh','Hoàn tác','Làm lại']) await expect(page.getByRole('button',{name,exact:true})).toBeVisible();
+    for (const name of ['Chọn','Nối cạnh','Thêm ví dụ','Hoàn tác','Làm lại']) await expect(page.getByRole('button',{name,exact:true})).toBeVisible();
     await expect(page.locator('.toolbar-more .vertical-ellipsis > span')).toHaveCount(3);
+    await expect(page.locator('.toolbar-undo .toolbar-action-icon')).toBeVisible();
+    await expect(page.locator('.toolbar-redo .toolbar-action-icon')).toBeVisible();
+    await expect(page.locator('.toolbar-undo > span')).toBeHidden();
+    await expect(page.locator('.toolbar-redo > span')).toBeHidden();
 
     const barHeight=async(selector:string)=>(await page.locator(selector).boundingBox())?.height;
     expect(await barHeight('.toolbar')).toBe(44);
@@ -287,11 +291,12 @@ test('mobile dùng toolbar hai tầng nhỏ gọn, runbar đủ tiến độ và
     const toolbarBoxBefore=await page.locator('.toolbar').boundingBox();
     const moreBox=await page.locator('.toolbar-more').boundingBox();
     if(!toolbarBoxBefore||!moreBox)throw new Error('Không đo được toolbar mobile');
-    expect(toolbarBoxBefore.x+toolbarBoxBefore.width-(moreBox.x+moreBox.width)).toBeLessThanOrEqual(5);
+    expect(toolbarBoxBefore.x+toolbarBoxBefore.width-(moreBox.x+moreBox.width)).toBeLessThanOrEqual(6);
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth)).toBe(true);
 
     await page.locator('.toolbar-more').click();
-    for(const name of ['Vô hướng','Thêm ví dụ','Nhập','Xuất','Toàn màn hình','Reset','Chế độ tối']) await expect(page.getByRole('button',{name,exact:true})).toBeVisible();
+    for(const name of ['Vô hướng','Nhập','Xuất','Toàn màn hình','Reset','Chế độ tối']) await expect(page.getByRole('button',{name,exact:true})).toBeVisible();
+    await expect(page.locator('.toolbar-secondary .toolbar-example')).toBeHidden();
     await expect(page.locator('.toolbar')).toHaveCSS('height','82px');
     await expect(page.locator('.toolbar-secondary')).toHaveCSS('overflow-x','auto');
 
