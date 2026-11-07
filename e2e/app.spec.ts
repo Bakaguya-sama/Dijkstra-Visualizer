@@ -260,51 +260,71 @@ test('hai cạnh cùng cặp node dùng hai làn riêng trên viền node', asyn
   await page.screenshot({path:testInfo.outputPath('hai-lan-canh-tren-vien.png'),fullPage:true});
 });
 
-test('mobile dùng các thanh 44px, menu Khác và cạnh vô hướng duy nhất', async ({ page }, testInfo) => {
+test('mobile dùng toolbar hai tầng nhỏ gọn, runbar đủ tiến độ và kết quả toàn vùng', async ({ page }, testInfo) => {
   for (const viewport of [{width:360,height:740},{width:390,height:844},{width:430,height:932}]) {
     await page.setViewportSize(viewport);
     await page.goto('/');
     await page.locator('.shortcut-popover').getByRole('button',{name:'Đóng'}).click();
     await expect(page.getByRole('button',{name:/Xem hướng dẫn tại đây/})).toHaveCount(0);
-    await expect(page.getByRole('button',{name:'Hướng dẫn phím tắt'})).toBeHidden();
+    const helpButton=page.getByRole('button',{name:'Hướng dẫn phím tắt'});
+    await expect(helpButton).toBeVisible();
+    await expect(helpButton).toHaveText('Hướng dẫn');
     for (const name of ['Chọn','Nối cạnh','Hoàn tác','Làm lại']) await expect(page.getByRole('button',{name,exact:true})).toBeVisible();
-    await expect(page.locator('.toolbar-more')).toHaveText('Khác');
+    await expect(page.locator('.toolbar-more .vertical-ellipsis > span')).toHaveCount(3);
 
     const barHeight=async(selector:string)=>(await page.locator(selector).boundingBox())?.height;
     expect(await barHeight('.toolbar')).toBe(44);
     expect(await barHeight('.selectors')).toBe(44);
     expect(await barHeight('.canvas-dock')).toBe(44);
     for(const selector of ['.toolbar','.selectors','.canvas-dock']){
-      expect(await page.locator(selector).evaluate(element=>getComputedStyle(element).borderRadius)).toBe('4px');
+      expect(await page.locator(selector).evaluate(element=>getComputedStyle(element).borderRadius)).toBe('10px');
     }
     const toolbarStyles=await page.locator('.toolbar-primary button').evaluateAll(elements=>elements.map(element=>{
       const style=getComputedStyle(element);const box=element.getBoundingClientRect();
       return {height:box.height,fontSize:style.fontSize,fontWeight:Number(style.fontWeight)};
     }));
-    expect(toolbarStyles.every(style=>style.height===36&&style.fontSize==='14px'&&style.fontWeight<700)).toBe(true);
+    expect(toolbarStyles.every(style=>style.height===34&&style.fontSize==='13px'&&style.fontWeight<700)).toBe(true);
+    const toolbarBoxBefore=await page.locator('.toolbar').boundingBox();
+    const moreBox=await page.locator('.toolbar-more').boundingBox();
+    if(!toolbarBoxBefore||!moreBox)throw new Error('Không đo được toolbar mobile');
+    expect(toolbarBoxBefore.x+toolbarBoxBefore.width-(moreBox.x+moreBox.width)).toBeLessThanOrEqual(5);
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth)).toBe(true);
 
     await page.locator('.toolbar-more').click();
-    for(const name of ['Vô hướng','Thêm ví dụ','Nhập','Xuất','Chế độ tối','Hướng dẫn']) await expect(page.getByRole('button',{name,exact:true})).toBeVisible();
-    await page.getByRole('button',{name:'Hướng dẫn',exact:true}).click();
-    await expect(page.getByRole('heading',{name:'Hướng dẫn thao tác trên điện thoại'})).toBeVisible();
-    await page.locator('.shortcut-popover').getByRole('button',{name:'Đóng'}).click();
+    for(const name of ['Vô hướng','Thêm ví dụ','Nhập','Xuất','Toàn màn hình','Reset','Chế độ tối']) await expect(page.getByRole('button',{name,exact:true})).toBeVisible();
+    await expect(page.locator('.toolbar')).toHaveCSS('height','82px');
+    await expect(page.locator('.toolbar-secondary')).toHaveCSS('overflow-x','auto');
 
     await page.getByLabel('Chọn file JSON').setInputFiles({name:'mobile-toolbar.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify({version:1,directed:false,nodes:[{id:'1',label:'1',x:100,y:200},{id:'2',label:'2',x:300,y:200}],edges:[{id:'e1',from:'1',to:'2',weight:1}],source:'1',target:'2'}))});
-    expect(await barHeight('.runbar')).toBe(44);
+    expect(await barHeight('.runbar')).toBe(48);
     const toolbarBox=await page.locator('.toolbar').boundingBox();
     const runbarBox=await page.locator('.runbar').boundingBox();
     const selectorsBox=await page.locator('.selectors').boundingBox();
     const resultBox=await page.locator('.panel-toggle-closed').boundingBox();
-    if(!toolbarBox||!runbarBox||!selectorsBox||!resultBox)throw new Error('Không đo được bố cục mobile');
+    const helpBox=await helpButton.boundingBox();
+    const rangeBox=await page.locator('.step-range').boundingBox();
+    if(!toolbarBox||!runbarBox||!selectorsBox||!resultBox||!helpBox||!rangeBox)throw new Error('Không đo được bố cục mobile');
     expect(runbarBox.y).toBeGreaterThanOrEqual(toolbarBox.y+toolbarBox.height+8);
     expect(resultBox.y).toBeGreaterThanOrEqual(selectorsBox.y+selectorsBox.height+8);
+    expect(resultBox.x+resultBox.width).toBeLessThanOrEqual(helpBox.x-8);
+    expect(rangeBox.y).toBeGreaterThanOrEqual(runbarBox.y+runbarBox.height-16);
+    expect(rangeBox.y+rangeBox.height).toBeLessThanOrEqual(runbarBox.y+runbarBox.height+2);
+    await expect(page.getByRole('combobox',{name:'Tốc độ chạy'})).toHaveValue('1');
     await expect(page.locator('.canvas-dock')).toBeHidden();
     await expect(page.locator('.react-flow__edge[data-id="e1"] .react-flow__edge-path')).toHaveCount(1);
     await expect(page.locator('.edge-label')).toHaveCount(1);
     expect(await page.locator('.react-flow__edge[data-id="e1"] .react-flow__edge-path').getAttribute('marker-end')).toBeNull();
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth)).toBe(true);
-    await page.screenshot({path:testInfo.outputPath(`mobile-${viewport.width}x${viewport.height}.png`),fullPage:true});
+    await page.screenshot({path:testInfo.outputPath(`mobile-compact-${viewport.width}x${viewport.height}.png`),fullPage:true});
+
+    await page.getByRole('button',{name:'Mở khu vực kết quả'}).click();
+    const panelBox=await page.locator('.side-panel').boundingBox();
+    if(!panelBox)throw new Error('Không đo được panel kết quả mobile');
+    expect(panelBox.y).toBeGreaterThanOrEqual(runbarBox.y+runbarBox.height+8);
+    expect(panelBox.y+panelBox.height).toBeLessThanOrEqual(viewport.height-7);
+    await expect(page.getByRole('heading',{name:'Kết quả'})).toBeVisible();
+    await expect(page.getByRole('heading',{name:'Bảng bước giải'})).toBeVisible();
+    await page.screenshot({path:testInfo.outputPath(`mobile-result-${viewport.width}x${viewport.height}.png`),fullPage:true});
   }
 });
 

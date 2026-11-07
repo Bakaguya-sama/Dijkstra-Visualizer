@@ -40,6 +40,6 @@ export function ShortcutHelp() {
         <div className="mobile-guide"><ShortcutGroups groups={vi.mobileShortcutGroups} /></div>
       </div>
     </section>}
-    <button className="shortcut-button" aria-label={vi.shortcuts} title={vi.shortcuts} aria-expanded={open} onClick={() => setOpen((value) => !value)}><KeyboardIcon /></button>
+    <button className="shortcut-button" aria-label={vi.shortcuts} title={vi.shortcuts} aria-expanded={open} onClick={() => setOpen((value) => !value)}><KeyboardIcon /><span className="shortcut-button-label">{vi.help}</span></button>
   </div>;
 }
