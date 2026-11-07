@@ -127,7 +127,7 @@ Sau đó mở địa chỉ mạng mà Vite hiển thị. Hệ điều hành có 
 2. Kiểm tra hai ô **Nguồn** và **Đích** ở phía dưới canvas.
 3. Dùng cụm transport `|‹`, `‹`, `›`, `›|` và nút SVG Play/Pause để về đầu, lùi, tiến, tới cuối hoặc chạy/dừng tự động. Di chuột vào nút để xem nhãn tiếng Việt.
 4. Panel kết quả đóng mặc định. Nhấn **Hiện kết quả** để mở Kết quả, Bảng bước giải và Diễn giải chi tiết; khi thuật toán hoàn tất, panel tự mở.
-5. Kéo separator để đổi độ rộng panel; dùng nút trên separator để đóng và nút ở mép phải canvas để mở lại. Panel luôn chừa đủ chỗ cho control canvas. Nếu nội dung rộng, cuộn toàn vùng kết quả thay vì cuộn riêng bảng.
+5. Kéo separator để đổi độ rộng panel; dùng nút trên separator để đóng và nút ở mép phải canvas để mở lại. Panel luôn chừa đủ chỗ cho control canvas. Panel chỉ cuộn dọc; bảng rộng có thanh cuộn ngang riêng trong vùng Bảng bước giải.
 6. Tới bước cuối để xem khoảng cách, đường đi và diễn giải từng bước. Truy vết nằm trong phần Diễn giải chi tiết, không lặp lại ở thẻ Kết quả. Bấm **Chạy** lần nữa ở bước cuối để phát lại từ bước 0.
 7. Dùng cụm góc dưới trái để thu/phóng và chuyển **Sáng/Tối**. Lựa chọn theme được giữ lại sau khi tải lại trang.
 
@@ -136,7 +136,7 @@ Kết quả, tiêu đề cột, đỉnh cố định, predecessor, đường đi
 ### Tự tạo đồ thị
 
 1. Ở chế độ **Chọn**, nhấp đúp vùng trống trên canvas để thêm node.
-2. Chọn node để hiện bốn điểm nối ở trên, phải, dưới và trái; hover đơn thuần không hiện điểm. Kéo từ một điểm nối sang node đích; trong lúc kéo, các điểm đích sẽ hiện ra.
+2. Bấm **Nối cạnh**, sau đó click/chạm node đầu và node cuối. Node đầu được nhấn mạnh; cạnh được tạo sau lần chọn thứ hai. Không còn chấm nối hoặc thao tác kéo handle.
 3. Chọn cạnh để mở thanh `− / trọng số / + / xóa`. Bấm giá trị để nhập trực tiếp; trọng số phải hữu hạn và không âm. Thanh không có thao tác đổi chiều.
 4. Nhấp một lần vào node để chọn; nhấp đúp để đổi tên hiển thị. Nhấn `Enter` để lưu hoặc `Escape` để hủy.
 5. Chọn **Nguồn** và **Đích** khác nhau. Ứng dụng vô hiệu hóa node nguồn trong danh sách đích và ngược lại. Chọn **Tất cả node** nếu muốn tính khoảng cách từ nguồn tới mọi node có thể tới; đây cũng là chế độ chạy hợp lệ cho đồ thị một node.
@@ -150,11 +150,11 @@ Nhấp đúp vùng trống thêm node nhưng không thay đổi zoom. Cạnh đ�
 
 Nút **Reset** làm mới thành canvas trống hoàn toàn. Nút **Thêm ví dụ** nạp VD1 cùng layout, nguồn và đích chuẩn. Không có hộp hay nút nạp mẫu ở giữa canvas.
 
-Node chưa có khoảng cách hữu hạn không hiện `∞`; node đích không hiện chữ `t`. Node nguồn vẫn có chữ `s`. Dưới bảng bước giải là phần diễn giải lũy tiến: khởi tạo, từng lần cố định/cập nhật node và truy vết khi hoàn tất.
+Node chưa có khoảng cách hữu hạn không hiện `∞`; node đích không hiện chữ `t`. Node nguồn vẫn có chữ `s`. Canvas vẫn trực quan hóa theo từng bước, nhưng khi mở panel, Kết quả, toàn bộ Bảng bước giải và toàn bộ Diễn giải/Truy vết luôn hiện lời giải cuối ngay từ đầu.
 
-Hướng dẫn tự mở khi tải trang. Desktop hiển thị phím tắt chuột/bàn phím; mobile tự chuyển sang **Hướng dẫn thao tác trên điện thoại** với cách chạm, chạm đúp, kéo điểm nối, chỉnh/xóa phần tử, kéo/chụm canvas và điều khiển thuật toán. Nút bàn phím, phím `?` và `Escape` dùng để mở/đóng sau đó.
+Hướng dẫn tự mở khi tải trang. Desktop hiển thị phím tắt chuột/bàn phím và giữ nút SVG bàn phím; mobile tự chuyển sang **Hướng dẫn thao tác trên điện thoại** với mode Chọn/Nối cạnh, cách chạm, chạm đúp, chỉnh/xóa phần tử, kéo/chụm canvas và điều khiển thuật toán. Trên mobile không có icon/note hướng dẫn cố định; mở lại bằng mục chữ **Hướng dẫn** trong menu **Khác**.
 
-Trên mobile, hướng dẫn nằm trong safe area giữa toolbar và các control đáy nên không che Nguồn/Đích. Header có nền đặc và nằm ngoài body cuộn, vì vậy nội dung không ló lên phía trên khi kéo. Hai ô Nguồn/Đích chuyển thành hai cột có nhãn phía trên, giữ đủ độ rộng để không cắt chữ; nút thùng rác 44×44px nằm ở cột cuối, sát mép phải và có viền đủ bốn cạnh.
+Trên mobile dưới 768px, mọi thanh nổi cao 44px, control bên trong cao 36px và bo 4px. Toolbar là một hàng **Chọn · Nối cạnh · Hoàn tác · Làm lại · Khác**, tự cuộn ngang và ẩn scrollbar khi thiếu chỗ. **Khác** mở menu gồm hướng đồ thị, Thêm ví dụ, Nhập, Xuất, Sáng/Tối và Hướng dẫn. Nguồn/Đích nằm cùng một hàng với nhãn phụ 12px; zoom chỉ còn `− 125% +`. Khi runbar xuất hiện, zoom ẩn và kết quả thu thành drawer 44px. Hướng dẫn nằm trong safe area, header cố định ngoài body cuộn; nút thùng rác vẫn là vùng chạm 44×44px có đủ bốn cạnh viền.
 
 Nút **Toàn màn hình** hoạt động hai chiều: bấm lần đầu để vào và bấm lại để thoát. Nếu thoát bằng `Escape`, nhãn nút cũng tự đồng bộ.
 
@@ -261,7 +261,7 @@ Sau đó chạy:
 npm run e2e
 ```
 
-E2E sẽ tự khởi động web server cục bộ và kiểm tra các luồng chính ở viewport 1280, 820 và 390 pixel.
+E2E sẽ tự khởi động web server cục bộ và kiểm tra các luồng chính ở desktop 1280×800 cùng mobile 360×740, 390×844 và 430×932.
 
 ### Kiểm tra đầy đủ trước khi bàn giao
 

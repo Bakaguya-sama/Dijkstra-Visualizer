@@ -3,7 +3,9 @@ import { expect, test } from '@playwright/test';
 const addExample = async (page: import('@playwright/test').Page) => {
   const help = page.locator('.shortcut-popover');
   if (await help.isVisible()) await help.getByRole('button', { name: 'Đóng' }).click();
-  await page.getByRole('button',{name:'Thêm ví dụ'}).click();
+  const example=page.getByRole('button',{name:'Thêm ví dụ'});
+  if(!(await example.isVisible()))await page.getByRole('button',{name:'Mở thêm công cụ'}).click();
+  await example.click();
   await expect(page.locator('.react-flow__node')).toHaveCount(6);
 };
 
@@ -26,9 +28,17 @@ test('chạy preset A, điều hướng và bảng bước giải', async ({ pag
   await expect(page.getByRole('heading',{name:'Diễn giải chi tiết từng bước & Truy vết'})).toBeVisible();
   await expect(page.getByRole('heading',{name:'Bước 0: Khởi tạo nhãn'})).toBeVisible();
   await expect(page.getByText('Bước 1: Cố định Đỉnh 1 (d = 0)',{exact:true})).toBeVisible();
+  await expect(page.locator('.distance-card')).toContainText('10');
+  await expect(page.locator('.path-line')).toContainText('1 → 4 → 5 → 6');
+  await expect(page.getByText('Truy vết đường đi ngắn nhất:',{exact:true})).toBeVisible();
+  await expect(page.locator('.label-table-section tbody tr')).toHaveCount(12);
+  await expect(page.locator('.result-status')).toHaveCount(0);
+  await expect(page.getByText('Tốc độ',{exact:true})).toHaveCount(0);
+  await expect(page.locator('.run-status')).toHaveCount(0);
   const tableScroll=page.locator('.table-scroll');
-  expect(await tableScroll.evaluate(element=>getComputedStyle(element).overflow)).toBe('visible');
+  expect(await tableScroll.evaluate(element=>getComputedStyle(element).overflowX)).toBe('auto');
   expect(await tableScroll.evaluate(element=>getComputedStyle(element).borderTopWidth)).toBe('0px');
+  expect(await page.locator('.panel-content').evaluate(element=>getComputedStyle(element).overflowX)).toBe('hidden');
   expect(await page.locator('.side-panel').evaluate(element=>element.getBoundingClientRect().width)).toBeGreaterThanOrEqual(700);
   await page.getByRole('button',{name:'Tới một bước',exact:true}).click();
   await page.getByRole('button',{name:'Tới một bước',exact:true}).click();
@@ -69,17 +79,18 @@ test('chỉnh sửa graph và hoàn tác', async ({ page }) => {
   await page.getByRole('button',{name:'Hoàn tác'}).click();
   await expect(sourceOptions).toHaveCount(7);
   await page.getByRole('button',{name:'Vừa khung'}).click();
+  const firstHandle=page.locator('.react-flow__node[data-id="1"] .react-flow__handle').first();
   await page.locator('.react-flow__node[data-id="1"]').click();
-  const sourceHandle=await page.locator('.react-flow__node[data-id="1"] .react-flow__handle-right').boundingBox();
-  const targetHandle=await page.locator('.react-flow__node[data-id="6"] .react-flow__handle-left').boundingBox();
-  if(!sourceHandle||!targetHandle)throw new Error('Không đo được điểm nối');
-  await page.mouse.move(sourceHandle.x+sourceHandle.width/2,sourceHandle.y+sourceHandle.height/2);
-  await page.mouse.down();
-  await page.mouse.move(targetHandle.x+targetHandle.width/2,targetHandle.y+targetHandle.height/2,{steps:12});
-  await page.mouse.up();
+  await expect(firstHandle).toHaveCSS('opacity','0');
+  await page.getByRole('button',{name:'Nối cạnh'}).click();
+  await expect(page.getByRole('button',{name:'Nối cạnh'})).toHaveAttribute('aria-pressed','true');
+  await page.locator('.react-flow__node[data-id="1"]').click();
+  await expect(page.locator('.react-flow__node[data-id="1"] .visual-node')).toHaveClass(/node-connect-source/);
+  await page.locator('.react-flow__node[data-id="6"]').click();
   await expect(page.locator('.react-flow__edge')).toHaveCount(11);
   await page.getByRole('button',{name:'Hoàn tác'}).click();
   await expect(page.locator('.react-flow__edge')).toHaveCount(10);
+  await page.getByRole('button',{name:'Chọn',exact:true}).click();
   await nodes.first().locator('.visual-node').dblclick();
   const nodeInput=page.getByRole('textbox',{name:'Sửa nhãn node'}); await nodeInput.fill('Nguồn'); await nodeInput.press('Enter');
   await expect(nodes.first().locator('.node-label')).toHaveText('Nguồn');
@@ -96,6 +107,7 @@ test('chỉnh sửa graph và hoàn tác', async ({ page }) => {
   if(box){await page.mouse.move(box.x+box.width/2,box.y+box.height/2);await page.mouse.down();await page.mouse.move(box.x+80,box.y+40,{steps:5});const during=await firstNode.boundingBox();expect(during?.x).toBeGreaterThan(box.x+20);await page.mouse.up();}
   expect(await page.locator('.react-flow__edge-path').first().getAttribute('d')).not.toContain('C');
   await expect(nodes.first().locator('.react-flow__handle')).toHaveCount(4);
+  await expect(nodes.first().locator('.react-flow__handle').first()).toHaveCSS('opacity','0');
 });
 
 test('xóa bằng Backspace kéo theo cạnh, hỗ trợ Shift chọn nhiều và hoàn tác một lần', async ({ page }) => {
@@ -120,7 +132,7 @@ test('hướng dẫn mở mặc định, đủ thao tác desktop/mobile và đ�
   await page.goto('/');
   await expect(page.getByRole('heading',{name:'Hướng dẫn phím tắt'})).toBeVisible();
   await expect(page.getByText('Tạo node',{exact:true}).first()).toBeVisible();
-  await expect(page.getByText('Kéo chấm nối sang node',{exact:true})).toBeVisible();
+  await expect(page.getByText('Bấm Nối cạnh, chọn hai node',{exact:true})).toBeVisible();
   await expect(page.getByText('Hướng dẫn thao tác trên điện thoại',{exact:true})).toBeHidden();
   await page.screenshot({path:testInfo.outputPath('huong-dan-mac-dinh.png'),fullPage:true});
   await addExample(page);
@@ -166,7 +178,14 @@ test('đổi độ rộng panel và không cho chọn nguồn trùng đích', as
   await page.mouse.down();
   await page.mouse.move(0,maxY,{steps:5});
   await page.mouse.up();
-  expect((await page.locator('.canvas-area').boundingBox())?.width).toBeGreaterThanOrEqual(470);
+  const canvasBox=await page.locator('.canvas-area').boundingBox();
+  expect(canvasBox?.width).toBeGreaterThanOrEqual(470);
+  const toolbarBox=await page.locator('.toolbar').boundingBox();
+  if(!canvasBox||!toolbarBox)throw new Error('Không đo được canvas hoặc toolbar desktop');
+  expect(toolbarBox.x).toBeGreaterThanOrEqual(canvasBox.x+15);
+  expect(toolbarBox.x+toolbarBox.width).toBeLessThanOrEqual(canvasBox.x+canvasBox.width-15);
+  expect(await page.locator('.toolbar').evaluate(element=>getComputedStyle(element).overflowX)).toBe('auto');
+  expect(await page.locator('.toolbar').evaluate(element=>element.scrollWidth>element.clientWidth)).toBe(true);
   const dock=await page.locator('.canvas-dock').boundingBox();
   const selectors=await page.locator('.selectors').boundingBox();
   if(!dock||!selectors)throw new Error('Không đo được control đáy canvas');
@@ -209,7 +228,7 @@ test('fullscreen bật tắt hai chiều và Space chỉ chạy khi nút đượ
   expect(await page.evaluate(()=>Boolean(document.fullscreenElement))).toBe(true);
   await page.getByRole('button',{name:'Thoát toàn màn hình'}).click();
   await expect(page.getByRole('button',{name:'Toàn màn hình'})).toBeVisible();
-  expect(await page.evaluate(()=>Boolean(document.fullscreenElement))).toBe(false);
+  await expect.poll(()=>page.evaluate(()=>Boolean(document.fullscreenElement))).toBe(false);
 });
 
 test('hai cạnh cùng cặp node dùng hai làn riêng trên viền node', async ({ page }, testInfo) => {
@@ -237,8 +256,56 @@ test('hai cạnh cùng cặp node dùng hai làn riêng trên viền node', asyn
   await page.screenshot({path:testInfo.outputPath('hai-lan-canh-tren-vien.png'),fullPage:true});
 });
 
+test('mobile dùng các thanh 44px, menu Khác và cạnh vô hướng duy nhất', async ({ page }, testInfo) => {
+  for (const viewport of [{width:360,height:740},{width:390,height:844},{width:430,height:932}]) {
+    await page.setViewportSize(viewport);
+    await page.goto('/');
+    await page.locator('.shortcut-popover').getByRole('button',{name:'Đóng'}).click();
+    await expect(page.getByRole('button',{name:/Xem hướng dẫn tại đây/})).toHaveCount(0);
+    await expect(page.getByRole('button',{name:'Hướng dẫn phím tắt'})).toBeHidden();
+    for (const name of ['Chọn','Nối cạnh','Hoàn tác','Làm lại']) await expect(page.getByRole('button',{name,exact:true})).toBeVisible();
+    await expect(page.locator('.toolbar-more')).toHaveText('Khác');
+
+    const barHeight=async(selector:string)=>(await page.locator(selector).boundingBox())?.height;
+    expect(await barHeight('.toolbar')).toBe(44);
+    expect(await barHeight('.selectors')).toBe(44);
+    expect(await barHeight('.canvas-dock')).toBe(44);
+    for(const selector of ['.toolbar','.selectors','.canvas-dock']){
+      expect(await page.locator(selector).evaluate(element=>getComputedStyle(element).borderRadius)).toBe('4px');
+    }
+    const toolbarStyles=await page.locator('.toolbar-primary button').evaluateAll(elements=>elements.map(element=>{
+      const style=getComputedStyle(element);const box=element.getBoundingClientRect();
+      return {height:box.height,fontSize:style.fontSize,fontWeight:Number(style.fontWeight)};
+    }));
+    expect(toolbarStyles.every(style=>style.height===36&&style.fontSize==='14px'&&style.fontWeight<700)).toBe(true);
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth)).toBe(true);
+
+    await page.locator('.toolbar-more').click();
+    for(const name of ['Vô hướng','Thêm ví dụ','Nhập','Xuất','Chế độ tối','Hướng dẫn']) await expect(page.getByRole('button',{name,exact:true})).toBeVisible();
+    await page.getByRole('button',{name:'Hướng dẫn',exact:true}).click();
+    await expect(page.getByRole('heading',{name:'Hướng dẫn thao tác trên điện thoại'})).toBeVisible();
+    await page.locator('.shortcut-popover').getByRole('button',{name:'Đóng'}).click();
+
+    await page.getByLabel('Chọn file JSON').setInputFiles({name:'mobile-toolbar.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify({version:1,directed:false,nodes:[{id:'1',label:'1',x:100,y:200},{id:'2',label:'2',x:300,y:200}],edges:[{id:'e1',from:'1',to:'2',weight:1}],source:'1',target:'2'}))});
+    expect(await barHeight('.runbar')).toBe(44);
+    const toolbarBox=await page.locator('.toolbar').boundingBox();
+    const runbarBox=await page.locator('.runbar').boundingBox();
+    const selectorsBox=await page.locator('.selectors').boundingBox();
+    const resultBox=await page.locator('.panel-toggle-closed').boundingBox();
+    if(!toolbarBox||!runbarBox||!selectorsBox||!resultBox)throw new Error('Không đo được bố cục mobile');
+    expect(runbarBox.y).toBeGreaterThanOrEqual(toolbarBox.y+toolbarBox.height+8);
+    expect(resultBox.y).toBeGreaterThanOrEqual(selectorsBox.y+selectorsBox.height+8);
+    await expect(page.locator('.canvas-dock')).toBeHidden();
+    await expect(page.locator('.react-flow__edge[data-id="e1"] .react-flow__edge-path')).toHaveCount(1);
+    await expect(page.locator('.edge-label')).toHaveCount(1);
+    expect(await page.locator('.react-flow__edge[data-id="e1"] .react-flow__edge-path').getAttribute('marker-end')).toBeNull();
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth)).toBe(true);
+    await page.screenshot({path:testInfo.outputPath(`mobile-${viewport.width}x${viewport.height}.png`),fullPage:true});
+  }
+});
+
 test('mobile có nút thùng rác cạnh Nguồn/Đích khi chọn phần tử', async ({ page }, testInfo) => {
-  await page.setViewportSize({width:390,height:640});
+  await page.setViewportSize({width:390,height:844});
   await page.goto('/');
   const guideBox=await page.locator('.shortcut-popover').boundingBox();
   const toolbarBox=await page.locator('.toolbar').boundingBox();
@@ -255,7 +322,7 @@ test('mobile có nút thùng rác cạnh Nguồn/Đích khi chọn phần tử',
   const guideBody=page.locator('.shortcut-body');
   const headerYBefore=(await guideHeader.boundingBox())?.y;
   await guideBody.evaluate((element)=>{ element.scrollTop=element.scrollHeight; });
-  expect((await guideBody.evaluate((element)=>element.scrollTop))).toBeGreaterThan(0);
+  expect(await guideBody.evaluate((element)=>getComputedStyle(element).overflowY)).toBe('auto');
   expect((await guideHeader.boundingBox())?.y).toBe(headerYBefore);
   expect(await page.locator('.shortcut-popover').evaluate((element)=>getComputedStyle(element).overflow)).toBe('hidden');
   await page.screenshot({path:testInfo.outputPath('mobile-huong-dan-khong-chong-lan.png'),fullPage:true});
@@ -300,7 +367,7 @@ test('tương tác canvas, reset, anchor cạnh và hướng dẫn phím tắt',
   await firstNode.hover();
   expect(await firstNode.locator('.react-flow__handle').first().evaluate(element=>getComputedStyle(element).opacity)).toBe('0');
   await firstNode.click();
-  await expect(firstNode.locator('.react-flow__handle').first()).toHaveCSS('opacity','1');
+  await expect(firstNode.locator('.react-flow__handle').first()).toHaveCSS('opacity','0');
   await expect(page.getByRole('textbox',{name:'Sửa nhãn node'})).toHaveCount(0);
   await firstNode.dblclick();
   await expect(page.getByRole('textbox',{name:'Sửa nhãn node'})).toBeVisible();

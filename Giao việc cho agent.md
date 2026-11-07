@@ -368,8 +368,8 @@ src/styles      tokens.css
 7. Không giả định id node bắt đầu từ 1 (ví dụ B bắt đầu từ 0).
 8. Mỗi tác vụ một nhánh, một PR nhỏ; chỉ sửa các file được liệt kê cho tác vụ đó.
 9. Toolbar không có tên Dijkstra hay nút Thêm node/Thêm cạnh/Xóa. Mở app là canvas trống; có Reset và Thêm ví dụ.
-10. Chọn: nhấp đúp canvas thêm node, click/Shift+click để chọn, double-click node sửa tên, handle chỉ hiện sau khi chọn; Backspace xóa toàn selection.
-11. Light/dark nằm trong cụm zoom; kéo node cập nhật trực tiếp; bảng không có scrollbar riêng.
+10. Chọn: nhấp đúp canvas thêm node, click/Shift+click để chọn, double-click node sửa tên; Backspace xóa toàn selection. Nối cạnh: click/chạm hai node; handle luôn ẩn.
+11. Light/dark nằm trong cụm zoom; kéo node cập nhật trực tiếp; bảng có scrollbar ngang riêng, panel chỉ cuộn dọc.
 
 ## Trước khi báo xong
 - lint, test, build đều thành công.
@@ -588,6 +588,33 @@ Mục này thắng mô tả hướng dẫn và nút xóa mobile cũ nếu còn m
 
 1. Không để toàn popover cùng cuộn. Popover là flex column `overflow: hidden`; header là phần cố định, nền surface đặc và có đường phân cách dưới; chỉ body `overflow-y: auto`.
 2. Khi cuộn body tới đầu, giữa hoặc cuối, tọa độ header không đổi và không có nội dung nào hiển thị trong khoảng phía trên/header.
-3. Desktop giữ **Hướng dẫn phím tắt**. Dưới 768px ẩn nhóm desktop và hiển thị **Hướng dẫn thao tác trên điện thoại** viết riêng cho cảm ứng: chạm/chạm đúp, kéo điểm nối, chỉnh cạnh, xóa bằng thùng rác, kéo/chụm canvas và nút điều khiển thuật toán.
+3. Desktop giữ **Hướng dẫn phím tắt**. Dưới 768px ẩn nhóm desktop và hiển thị **Hướng dẫn thao tác trên điện thoại** viết riêng cho cảm ứng: chạm/chạm đúp, mode Nối cạnh hai-chạm, chỉnh cạnh, xóa bằng thùng rác, kéo/chụm canvas và nút điều khiển thuật toán.
 4. Nút thùng rác trong grid Nguồn/Đích là button 44×44px, có border 1px ở cả bốn cạnh, bo góc và focus state như control khác. Không thay border đầy đủ bằng divider trái.
 5. E2E dùng viewport thấp như 390×640 để buộc body hướng dẫn cuộn; xác nhận `scrollTop > 0`, header giữ nguyên tọa độ và hướng dẫn desktop bị ẩn. Đồng thời kiểm tra riêng `borderTop/Right/Bottom/LeftWidth` của nút xóa đều là 1px.
+
+## 16. Điều chỉnh sau vòng góp ý giao diện 11
+
+Mục này thắng mọi mô tả cũ về handle, panel kết quả, overflow bảng và toolbar/runbar:
+
+1. Kết quả tính toán không phụ thuộc step trình chiếu. Khi panel mở, `Result`, `LabelTable` và `DetailedExplanation` luôn dùng snapshot cuối; hiển thị ngay khoảng cách/path, toàn bộ hàng bảng, toàn bộ diễn giải và truy vết. Canvas vẫn dùng snapshot hiện tại.
+2. `.panel-content` chỉ `overflow-y: auto` và `overflow-x: hidden`. `.analysis-content` không dùng `min-width: max-content`; `.table-scroll` chịu `overflow-x: auto`, để chỉ zone bảng có thanh kéo ngang.
+3. Thêm `EditorMode = 'select' | 'connect'`. Mode Chọn cho thêm/kéo/đổi tên/chọn/xóa node và chọn/chỉnh/xóa cạnh hiện có. Mode Nối cạnh khóa kéo node; click/chạm node đầu rồi node cuối để tạo cạnh, click lại node đầu hoặc nền để hủy.
+4. React Flow vẫn giữ handle kỹ thuật để đo anchor nhưng handle luôn opacity 0, `pointer-events: none`; không tạo cạnh bằng kéo. Node đầu của mode Nối cạnh có ring trạng thái riêng.
+5. Runbar bỏ hoàn toàn Tốc độ và nhãn Hoàn tất/Đang chạy; autoplay dùng nhịp cố định 700ms. Mobile dùng nhãn ngắn **Kết quả**.
+6. Yêu cầu toolbar mobile hai tầng của vòng này đã được vòng 12 thay thế; các hành vi Chọn/Nối cạnh/Undo/Redo vẫn giữ nguyên.
+7. Mobile giữ float offset 8px, select ≥120px tại 390px và nút xóa 44×44px. Note/icon hướng dẫn của vòng này đã được vòng 12 loại bỏ.
+8. E2E bắt buộc kiểm tra kết quả cuối ở step giữa, bảng cuộn nội bộ, mode Nối cạnh hai-click, handle ẩn, không overflow ngang và không phát sinh React update loop; tiêu chí bố cục mobile theo vòng 12.
+
+## 17. Điều chỉnh sau vòng góp ý giao diện 12
+
+Mục này thắng mọi mô tả cũ về toolbar desktop/mobile, note hướng dẫn và các thanh nổi dưới 768px:
+
+1. Desktop: toolbar không được tràn qua splitter vào panel kết quả. Giới hạn theo chiều rộng canvas và dùng `overflow-x: auto`; hành vi từ 768px trở lên ngoài điểm này giữ nguyên.
+2. Dưới 768px khai báo một chỗ các token `--m-gap: 8px`, `--m-bar-h: 44px`, `--m-control-h: 36px`, `--radius: 4px`. Mọi thanh nổi dùng cùng surface, border 1px, shadow, radius 4px; chữ chỉ 12/14px, weight 400/500.
+3. Toolbar mobile là một hàng: Chọn, Nối cạnh, Hoàn tác, Làm lại, Khác; gap 4px, padding ngang 12px, control cao 36px. Khi thiếu chỗ, cuộn ngang nội bộ và ẩn scrollbar. Active chỉ đổi nền/chữ, border 1px luôn trong suốt để không nhảy kích thước.
+4. Nút chữ **Khác** thay ký tự `⋮`, mở menu gồm Vô/Có hướng, Thêm ví dụ, Nhập, Xuất, Chế độ sáng/tối và Hướng dẫn. Mobile không hiện icon bàn phím và không còn note **Xem hướng dẫn tại đây →**.
+5. Thanh Nguồn/Đích cao 44px, hai ô chia đều; label 12px nằm cùng hàng với giá trị 14px. Nút xóa vẫn là vùng chạm 44×44px có border đủ bốn cạnh; tại 390px hai select không hẹp dưới 120px.
+6. Hàng tiện ích cao 44px chỉ có `− 125% +`. Khi runbar 44px hiện ngay dưới toolbar, ẩn zoom; panel kết quả đóng thành drawer 44px chữ **Kết quả**. Thanh dưới cách đáy tối thiểu `24px + env(safe-area-inset-bottom)`.
+7. Dời attribution React Flow tới vùng trống; không để giao toolbar, runbar, selectors, hướng dẫn hoặc drawer. Khi chưa chạy, tổng vùng cao bị các thanh che không quá 25% viewport.
+8. Mỗi cạnh vô hướng chỉ render một đường, một nhãn và không marker mũi tên. Không thay đổi engine, state, schema hoặc dữ liệu preset.
+9. Playwright đo tại 360×740, 390×844, 430×932: thanh 44±1, control 36±1, radius 4px, font chỉ 12/14px, không weight 700, không giao nhau và không cuộn ngang trang. Desktop 1280×800 phải giữ giao diện, đồng thời kéo splitter xác nhận toolbar nằm trọn trong canvas và có scroll nội bộ.

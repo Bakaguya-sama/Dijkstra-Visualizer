@@ -6,14 +6,13 @@ import {
   MarkerType,
   Panel,
   ReactFlow,
-  type Connection,
   type NodeChange,
   type ReactFlowInstance,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { vi } from '../i18n/vi';
-import type { GraphDocument, Layout, Snapshot } from '../model/types';
+import type { EditorMode, GraphDocument, Layout, Snapshot } from '../model/types';
 import { EdgeView, type VisualEdge } from './EdgeView';
 import { NodeView, type VisualNode } from './NodeView';
 import { ShortcutHelp } from './ShortcutHelp';
@@ -37,6 +36,7 @@ type Props = {
   selectedNodes: string[];
   selectedEdges: string[];
   resetViewToken: number;
+  mode: EditorMode;
 };
 
 const handleFor = (from: Layout[string], to: Layout[string]) => {
@@ -132,11 +132,11 @@ function allocateBorderAnchors(graphEdges: GraphDocument['graph']['edges'], posi
   return result;
 }
 
-export function Canvas({ document, snapshot, path, theme, onTheme, onAddNode, onMove, onConnect, onRename, onWeight, onDeleteEdge, onSelect, selectedNodes, selectedEdges, resetViewToken }: Props) {
+export function Canvas({ document, snapshot, path, theme, onTheme, onAddNode, onMove, onConnect, onRename, onWeight, onDeleteEdge, onSelect, selectedNodes, selectedEdges, resetViewToken, mode }: Props) {
   const instance = useRef<ReactFlowInstance<VisualNode, VisualEdge> | null>(null);
   const lastPaneClick = useRef<{ at: number; x: number; y: number } | null>(null);
   const [zoom, setZoom] = useState(1);
-  const [connecting, setConnecting] = useState(false);
+  const [connectFrom, setConnectFrom] = useState<string | null>(null);
   const pathNodes = useMemo(() => new Set(path), [path]);
   const pathEdges = useMemo(() => new Set(path.slice(1).map((node, index) => `${path[index]}\u0000${node}`)), [path]);
   const computedNodes = useMemo<VisualNode[]>(() => document.graph.nodes.map((node) => ({
@@ -152,8 +152,10 @@ export function Canvas({ document, snapshot, path, theme, onTheme, onAddNode, on
       onRename: (label) => onRename(node.id, label),
       source: document.source === node.id,
       onPath: pathNodes.has(node.id),
+      editable: mode === 'select',
+      connectSource: mode === 'connect' && connectFrom === node.id,
     },
-  })), [document.graph.nodes, document.layout, document.source, onRename, pathNodes, selectedNodes, snapshot]);
+  })), [connectFrom, document.graph.nodes, document.layout, document.source, mode, onRename, pathNodes, selectedNodes, snapshot]);
   const [nodes, setNodes] = useState<VisualNode[]>(computedNodes);
 
   useEffect(() => {
@@ -166,17 +168,17 @@ export function Canvas({ document, snapshot, path, theme, onTheme, onAddNode, on
     });
   }, [computedNodes]);
   useEffect(() => {
-    const localSelection = nodes.filter((node) => node.selected).map((node) => node.id);
-    if (localSelection.length !== selectedNodes.length || localSelection.some((id, index) => id !== selectedNodes[index])) onSelect(localSelection, selectedEdges);
-  }, [nodes, onSelect, selectedEdges, selectedNodes]);
-  useEffect(() => {
     if (!resetViewToken) return;
     window.requestAnimationFrame(() => void instance.current?.fitView({ padding: .22, maxZoom: 1.25 }));
   }, [resetViewToken]);
+  useEffect(() => { setConnectFrom(null); }, [mode]);
 
   const changeNodes = useCallback((changes: NodeChange<VisualNode>[]) => {
     setNodes((current) => applyNodeChanges<VisualNode>(changes, current));
   }, []);
+  const changeSelection = useCallback(({ nodes: nextNodes, edges: nextEdges }: { nodes: VisualNode[]; edges: VisualEdge[] }) => {
+    if (mode === 'select') onSelect(nextNodes.map((node) => node.id), nextEdges.map((edge) => edge.id));
+  }, [mode, onSelect]);
   const positions = useMemo(() => Object.fromEntries(nodes.map((node) => [node.id, node.position])), [nodes]);
   const edgeHandles = useMemo(() => allocateHandles(document.graph.edges, { ...document.layout, ...positions }), [document.graph.edges, document.layout, positions]);
   const edgeAnchors = useMemo(() => allocateBorderAnchors(document.graph.edges, { ...document.layout, ...positions }), [document.graph.edges, document.layout, positions]);
@@ -204,7 +206,7 @@ export function Canvas({ document, snapshot, path, theme, onTheme, onAddNode, on
   }), [document.graph.directed, document.graph.edges, document.layout, edgeAnchors, edgeHandles, onDeleteEdge, onWeight, pathEdges, positions, selectedEdges, snapshot]);
 
   return <ReactFlow<VisualNode, VisualEdge>
-    className={connecting ? 'is-connecting' : ''}
+    className={`canvas-mode-${mode}`}
     nodes={nodes}
     edges={edges}
     nodeTypes={nodeTypes}
@@ -223,6 +225,7 @@ export function Canvas({ document, snapshot, path, theme, onTheme, onAddNode, on
     onNodesChange={changeNodes}
     onPaneClick={(event) => {
       onSelect([], []);
+      if (mode === 'connect') { setConnectFrom(null); return; }
       const previous = lastPaneClick.current;
       const isDouble = previous && event.timeStamp - previous.at < 420 && Math.hypot(event.clientX - previous.x, event.clientY - previous.y) < 12;
       if (isDouble) {
@@ -231,12 +234,16 @@ export function Canvas({ document, snapshot, path, theme, onTheme, onAddNode, on
         lastPaneClick.current = null;
       } else lastPaneClick.current = { at: event.timeStamp, x: event.clientX, y: event.clientY };
     }}
-    onNodeClick={(event, node) => onSelect(event.shiftKey ? (selectedNodes.includes(node.id) ? selectedNodes.filter((id) => id !== node.id) : [...selectedNodes, node.id]) : [node.id], event.shiftKey ? selectedEdges : [])}
-    onEdgeClick={(event, edge) => onSelect(event.shiftKey ? selectedNodes : [], event.shiftKey ? (selectedEdges.includes(edge.id) ? selectedEdges.filter((id) => id !== edge.id) : [...selectedEdges, edge.id]) : [edge.id])}
+    onNodeClick={(_, node) => {
+      if (mode === 'connect') {
+        if (connectFrom && connectFrom !== node.id) { onConnect(connectFrom, node.id); setConnectFrom(null); onSelect([], []); }
+        else { const next = connectFrom === node.id ? null : node.id; setConnectFrom(next); onSelect(next ? [next] : [], []); }
+      }
+    }}
+    onEdgeClick={(event, edge) => { if (mode === 'select') onSelect(event.shiftKey ? selectedNodes : [], event.shiftKey ? (selectedEdges.includes(edge.id) ? selectedEdges.filter((id) => id !== edge.id) : [...selectedEdges, edge.id]) : [edge.id]); }}
+    onSelectionChange={changeSelection}
     onNodeDragStop={(_, node) => onMove(node.id, node.position.x, node.position.y)}
-    onConnect={(connection: Connection) => { if (connection.source && connection.target) onConnect(connection.source, connection.target); }}
-    onConnectStart={() => setConnecting(true)}
-    onConnectEnd={(_, state) => { setConnecting(false); if (!state.isValid && state.fromNode && state.toNode && state.fromNode.id !== state.toNode.id) onConnect(state.fromNode.id, state.toNode.id); }}
+    nodesDraggable={mode === 'select'}
     nodesConnectable
     elementsSelectable
   >

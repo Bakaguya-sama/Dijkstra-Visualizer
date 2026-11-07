@@ -9,7 +9,7 @@ import { runDijkstra } from './engine/dijkstra';
 import { vi } from './i18n/vi';
 import { createEditorState, graphReducer, type EditorAction } from './model/graphReducer';
 import { exportGraphJson, importGraphJson } from './model/serialize';
-import type { GraphDocument } from './model/types';
+import type { EditorMode, GraphDocument } from './model/types';
 import { presetA } from './presets/samples';
 
 type Theme = 'light' | 'dark';
@@ -19,6 +19,7 @@ const panelMaximum = () => Math.max(320, Math.min(1200, window.innerWidth - 480)
 const emptyDocument: GraphDocument = { version: 1, graph: { directed: false, nodes: [], edges: [] }, layout: {}, source: null, target: null };
 const PanelChevron = ({ direction }: { direction: 'left' | 'right' }) => <svg className="panel-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d={direction === 'left' ? 'm15 5-7 7 7 7' : 'm9 5 7 7-7 7'} /></svg>;
 const TrashIcon = () => <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3m3 0-1 13H7L6 7m4 4v5m4-5v5" /></svg>;
+const toggleHelp = () => globalThis.dispatchEvent(new KeyboardEvent('keydown', { key: '?' }));
 
 export default function App() {
   const [editor, dispatch] = useReducer(graphReducer, emptyDocument, createEditorState);
@@ -27,7 +28,8 @@ export default function App() {
   const [selectedEdges, setSelectedEdges] = useState<string[]>([]);
   const [step, setStep] = useState(0);
   const [playing, setPlaying] = useState(false);
-  const [speed, setSpeed] = useState(700);
+  const [mode, setMode] = useState<EditorMode>('select');
+  const [toolbarMoreOpen, setToolbarMoreOpen] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [panelWidth, setPanelWidth] = useState(() => Math.min(500, Math.max(320, window.innerWidth * .4)));
@@ -61,9 +63,9 @@ export default function App() {
     const timer = window.setInterval(() => setStep((current) => {
       if (current >= last) { setPlaying(false); return current; }
       return current + 1;
-    }), speed);
+    }), 700);
     return () => window.clearInterval(timer);
-  }, [playing, speed, last]);
+  }, [playing, last]);
 
   const edit = useCallback((action: EditorAction, layoutOnly = false) => {
     if (!layoutOnly && (step > 0 || playing)) { setMessage(vi.editReset); setStep(0); setPlaying(false); }
@@ -84,6 +86,9 @@ export default function App() {
   const selectElements = useCallback((nodes: string[], edges: string[]) => {
     setSelectedNodes((current) => sameIds(current, nodes) ? current : nodes);
     setSelectedEdges((current) => sameIds(current, edges) ? current : edges);
+  }, []);
+  const changeMode = useCallback((next: EditorMode) => {
+    setMode(next); setSelectedNodes([]); setSelectedEdges([]);
   }, []);
 
   useEffect(() => {
@@ -127,7 +132,7 @@ export default function App() {
   }), []);
   const loadCanvas = useCallback((nextDocument: GraphDocument) => {
     dispatch({ type: 'replace', document: nextDocument });
-    setSelectedNodes([]); setSelectedEdges([]); setStep(0); setPlaying(false); setPanelOpen(false); setMessage(null);
+    setSelectedNodes([]); setSelectedEdges([]); setStep(0); setPlaying(false); setPanelOpen(false); setMessage(null); setMode('select');
     setResetViewToken((value) => value + 1);
   }, []);
   const resetCanvas = useCallback(() => loadCanvas(emptyDocument), [loadCanvas]);
@@ -156,14 +161,14 @@ export default function App() {
 
   const workspaceStyle = { '--panel-current-w': `${panelWidth}px` } as CSSProperties;
   return <main className={`app theme-${theme}`}><h1 className="sr-only">{vi.appName}</h1><div ref={workspaceRef} style={workspaceStyle} className={`workspace${result && panelOpen ? ' with-panel' : ''}`}>
-    <div className="canvas-area">
-      <Canvas document={document} snapshot={snapshot} path={path} theme={theme} onTheme={() => setTheme((value) => value === 'dark' ? 'light' : 'dark')} onAddNode={addNode} onMove={moveNode} onConnect={addEdge} onRename={renameNode} onWeight={updateWeight} onDeleteEdge={deleteEdge} onSelect={selectElements} selectedNodes={selectedNodes} selectedEdges={selectedEdges} resetViewToken={resetViewToken} />
-      <Toolbar directed={document.graph.directed} canUndo={editor.past.length > 0} canRedo={editor.future.length > 0} fullscreen={fullscreen} onToggle={() => edit({ type: 'toggle-directed' })} onUndo={() => edit({ type: 'undo' })} onRedo={() => edit({ type: 'redo' })} onImport={() => inputRef.current?.click()} onExport={exportFile} onFullscreen={toggleFullscreen} onReset={resetCanvas} onExample={loadExample} />
-      {result && <Controls index={step} count={snapshots.length} playing={playing} speed={speed} showTable={panelOpen} onIndex={setIndex} onPlaying={togglePlaying} onSpeed={setSpeed} onTable={toggleTable} />}
+    <div className={`canvas-area${toolbarMoreOpen?' toolbar-expanded':''}`}>
+      <Canvas document={document} snapshot={snapshot} path={path} theme={theme} onTheme={() => setTheme((value) => value === 'dark' ? 'light' : 'dark')} onAddNode={addNode} onMove={moveNode} onConnect={addEdge} onRename={renameNode} onWeight={updateWeight} onDeleteEdge={deleteEdge} onSelect={selectElements} selectedNodes={selectedNodes} selectedEdges={selectedEdges} resetViewToken={resetViewToken} mode={mode} />
+      <Toolbar directed={document.graph.directed} canUndo={editor.past.length > 0} canRedo={editor.future.length > 0} fullscreen={fullscreen} onToggle={() => edit({ type: 'toggle-directed' })} onUndo={() => edit({ type: 'undo' })} onRedo={() => edit({ type: 'redo' })} onImport={() => inputRef.current?.click()} onExport={exportFile} onFullscreen={toggleFullscreen} onReset={resetCanvas} onExample={loadExample} mode={mode} onMode={changeMode} moreOpen={toolbarMoreOpen} onMore={() => setToolbarMoreOpen((open)=>!open)} theme={theme} onTheme={() => setTheme((value) => value === 'dark' ? 'light' : 'dark')} onHelp={toggleHelp} />
+      {result && <Controls index={step} count={snapshots.length} playing={playing} showTable={panelOpen} onIndex={setIndex} onPlaying={togglePlaying} onTable={toggleTable} />}
       <div className="selectors floating"><label><span className="selector-label">{vi.source}</span><select value={document.source ?? ''} onChange={(event) => { dispatch({ type: 'set-source', id: event.target.value || null }); setStep(0); setPlaying(false); }}><option value="">{vi.choose}</option>{document.graph.nodes.map((node) => <option value={node.id} key={node.id} disabled={document.target === node.id}>{node.label}</option>)}</select></label><label><span className="selector-label">{vi.target}</span><select value={document.target ?? '__all'} onChange={(event) => { dispatch({ type: 'set-target', id: event.target.value === '__all' ? null : event.target.value }); setStep(0); setPlaying(false); }}><option value="__all">{vi.allNodes}</option>{document.graph.nodes.map((node) => <option value={node.id} key={node.id} disabled={document.source === node.id}>{node.label}</option>)}</select></label>{(selectedNodes.length > 0 || selectedEdges.length > 0) && <button className="mobile-delete" aria-label={vi.deleteSelection} title={vi.deleteSelection} onClick={removeSelected}><TrashIcon /></button>}</div>
       {(message || editor.error) && <div className="notice" role="status">{message ?? editor.error}<button onClick={() => { setMessage(null); dispatch({ type: 'clear-error' }); }}>{vi.close}</button></div>}
-      {result && !panelOpen && <button className="panel-toggle-closed" aria-label={vi.showResult} title={vi.showResult} onClick={toggleTable}><PanelChevron direction="left" /></button>}
+      {result && !panelOpen && <button className="panel-toggle-closed" aria-label={vi.showResult} title={vi.showResult} onClick={toggleTable}><span className="panel-toggle-label">{vi.result}</span><PanelChevron direction="left" /></button>}
     </div>
-    {result && panelOpen && <><div className="panel-resizer" role="separator" aria-label={vi.resizePanel} aria-orientation="vertical" aria-valuemin={320} aria-valuemax={panelMaximum()} aria-valuenow={Math.round(panelWidth)} tabIndex={0} onPointerDown={resizePanel} onKeyDown={(event) => { if (event.key === 'ArrowLeft') { event.preventDefault(); resizeWithKeyboard(1); } if (event.key === 'ArrowRight') { event.preventDefault(); resizeWithKeyboard(-1); } }}><button className="panel-toggle" aria-label={vi.hideResult} title={vi.hideResult} onPointerDown={(event) => event.stopPropagation()} onClick={toggleTable}><PanelChevron direction="right" /></button></div><aside className="side-panel open"><button className="drawer-toggle" onClick={toggleTable}>{vi.hideResult}</button><div className="panel-content"><Result result={result} finished={Boolean(finished)} target={document.target} graph={document.graph} />{snapshot && document.source && <div className="analysis-content"><LabelTable graph={document.graph} snapshots={snapshots} current={step} /><DetailedExplanation snapshots={snapshots} current={step} result={result} graph={document.graph} source={document.source} target={document.target} /></div>}</div></aside></>}
+    {result && panelOpen && <><div className="panel-resizer" role="separator" aria-label={vi.resizePanel} aria-orientation="vertical" aria-valuemin={320} aria-valuemax={panelMaximum()} aria-valuenow={Math.round(panelWidth)} tabIndex={0} onPointerDown={resizePanel} onKeyDown={(event) => { if (event.key === 'ArrowLeft') { event.preventDefault(); resizeWithKeyboard(1); } if (event.key === 'ArrowRight') { event.preventDefault(); resizeWithKeyboard(-1); } }}><button className="panel-toggle" aria-label={vi.hideResult} title={vi.hideResult} onPointerDown={(event) => event.stopPropagation()} onClick={toggleTable}><PanelChevron direction="right" /></button></div><aside className="side-panel open"><button className="drawer-toggle" onClick={toggleTable}>{vi.hideResult}</button><div className="panel-content"><Result result={result} target={document.target} graph={document.graph} />{snapshot && document.source && <div className="analysis-content"><LabelTable graph={document.graph} snapshots={snapshots} current={last} /><DetailedExplanation snapshots={snapshots} current={last} result={result} graph={document.graph} source={document.source} target={document.target} /></div>}</div></aside></>}
   </div><input ref={inputRef} className="sr-only" type="file" accept="application/json,.json" aria-label={vi.importFile} onChange={(event) => { const file = event.target.files?.[0]; if (file) void file.text().then(importText); event.target.value = ''; }} /></main>;
 }

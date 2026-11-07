@@ -1,4 +1,5 @@
 export type NodeId = string;
+export type EditorMode = 'select' | 'connect';
 export interface GraphNode { id: NodeId; label: string }
 export interface GraphEdge { id: string; from: NodeId; to: NodeId; weight: number }
 export interface Graph { directed: boolean; nodes: GraphNode[]; edges: GraphEdge[] }

@@ -1,6 +1,6 @@
 # Dijkstra Algorithm Visualizer — Tài liệu đặc tả
 
-Tác giả: Huy · Trạng thái: đã cập nhật theo góp ý giao diện vòng 10 (07/11/2026) · Tài liệu tham chiếu: ECE 307, "Transshipment and Shortest Path Problems" (George Gross, UIUC), slide 51–68
+Tác giả: Huy · Trạng thái: đã cập nhật theo góp ý giao diện vòng 12 (07/11/2026) · Tài liệu tham chiếu: ECE 307, "Transshipment and Shortest Path Problems" (George Gross, UIUC), slide 51–68
 
 ## 1. Tổng quan
 
@@ -22,7 +22,7 @@ Hai nhóm dùng chính: giảng viên minh họa thuật toán trên lớp, và 
 
 ### 2.1 Bản đầu (MVP)
 
-- Vẽ và chỉnh sửa đồ thị trực tiếp trên canvas: nhấp đúp để thêm node, kéo điểm nối để thêm cạnh, `Backspace` để xóa, sửa nhãn/trọng số tại chỗ và kéo thả node theo thời gian thực.
+- Vẽ và chỉnh sửa đồ thị trực tiếp trên canvas: nhấp đúp để thêm node ở mode Chọn, chọn **Nối cạnh** rồi click/chạm hai node để thêm cạnh, `Backspace` để xóa, sửa nhãn/trọng số tại chỗ và kéo thả node theo thời gian thực.
 - Đồ thị vô hướng và có hướng.
 - Chạy Dijkstra từng bước (tới, lùi, tự chạy, nhảy bước) theo đúng thuật toán trong tài liệu.
 - Bảng bước giải (bật/tắt được, mặc định tắt) và giải thích bằng văn bản cho từng bước.
@@ -86,7 +86,7 @@ Từ đích n, chọn node j sao cho nhãn vĩnh viễn của j + d\_jn = khoả
 | FR-01 | Trong chế độ Chọn, nhấp đúp vùng trống của canvas để thêm node | MVP |
 | FR-02 | Shift-chọn nhiều node/cạnh rồi nhấn `Backspace` để xóa cùng một transaction; xóa node kéo theo cạnh và undo khôi phục toàn bộ | MVP |
 | FR-03 | Kéo thả node, cạnh đi theo node theo thời gian thực | MVP |
-| FR-04 | Mỗi node có bốn điểm nối chỉ hiện sau khi node được chọn; khi đang kéo nối, các điểm đích mới hiện để nhận kết nối | MVP |
+| FR-04 | Toolbar có mode **Nối cạnh**; click/chạm node đầu rồi node cuối để tạo cạnh. Handle kỹ thuật luôn ẩn và không nhận tương tác | MVP |
 | FR-05 | Chọn cạnh mở thanh thao tác tại cạnh gồm giảm trọng số, giá trị/sửa, tăng trọng số và xóa; không có đổi chiều | MVP |
 | FR-06 | Xóa bằng `Backspace`, nút xóa trên thanh cạnh hoặc nút thùng rác mobile cạnh Nguồn/Đích; không có nút Xóa toàn cục trên toolbar | MVP |
 | FR-07 | Nhấp một lần để chọn node; nhấp đúp node để đổi tên/nhãn tại chỗ | MVP |
@@ -101,7 +101,7 @@ Từ đích n, chọn node j sao cho nhãn vĩnh viễn của j + d\_jn = khoả
 | --- | --- | --- |
 | FR-20 | Chọn node nguồn và node đích ở thanh nổi dưới canvas; hai node không được trùng nhau | MVP |
 | FR-21 | Cụm điều khiển Đầu, Lùi, bộ đếm bước, Tiếp, Cuối và Chạy/Dừng theo bố cục transport bar; thanh chạy chỉ hiện khi lựa chọn nguồn/đích hợp lệ | MVP |
-| FR-22 | Tự chạy (play/pause) với tốc độ chỉnh được; bấm Chạy ở snapshot cuối phải về bước 0 và phát lại | MVP |
+| FR-22 | Tự chạy (play/pause) ở nhịp cố định; bấm Chạy ở snapshot cuối phải về bước 0 và phát lại | MVP |
 | FR-23 | Thanh trượt nhảy tới bước bất kỳ | MVP |
 | FR-24 | Chế độ "chạy đến khi hết node" để xem khoảng cách từ nguồn tới mọi node | MVP |
 
@@ -120,7 +120,7 @@ Từ đích n, chọn node j sao cho nhãn vĩnh viễn của j + d\_jn = khoả
 
 | Mã | Yêu cầu | Ưu tiên |
 | --- | --- | --- |
-| FR-40 | Dưới bảng có phần Diễn giải chi tiết từng bước & Truy vết, sinh động từ snapshots và chỉ hiện tới bước hiện tại | MVP |
+| FR-40 | Dưới bảng có phần Diễn giải chi tiết từng bước & Truy vết đầy đủ từ snapshot cuối ngay khi panel được mở, độc lập với bước đang hiển thị trên canvas | MVP |
 | FR-41 | Với mỗi node được cập nhật, hiển thị phép tính: min(∞, 4 + 3) = 7 | MVP |
 | FR-42 | Bảng bước giải chỉ để đọc, không nhận click để đổi snapshot; điều hướng bước chỉ qua runbar/phím tắt | MVP |
 | FR-43 | Khối Kết quả cuối chỉ hiện độ dài và đường đi theo chiều xuôi, không badge số thứ tự và không khối truy vết; truy vết vẫn nằm trong Diễn giải chi tiết | MVP |
@@ -262,13 +262,13 @@ Giao diện là một công cụ làm việc gọn, gần với trình soạn th
 ### 8.2 Bố cục
 
 - **Canvas là trung tâm**: chiếm toàn bộ vùng làm việc, nền phẳng có lưới mờ. Mọi thanh điều khiển là thanh nổi đặt đè lên canvas, cách mép 16px, rộng vừa đủ nội dung, không chiếm hết chiều ngang.
-- **Thanh công cụ nổi** ở gần mép trên: Chọn, Vô hướng/Có hướng, Hoàn tác, Làm lại, Nhập, Xuất, Toàn màn hình, Reset, Thêm ví dụ. Không có tên Dijkstra, Thêm node, Thêm cạnh hoặc Xóa.
-- **Thanh chạy nổi** nằm ngay dưới thanh công cụ và chỉ hiện khi lựa chọn hợp lệ. Thứ tự: Đầu, Lùi, bộ đếm `4 / 12`, Tiếp, Cuối; vạch phân cách; Chạy/Dừng; Tốc độ; trạng thái bước/Hoàn tất; bật/tắt bảng. Thanh trượt tiến trình nằm sát đáy runbar.
+- **Thanh công cụ nổi** ở gần mép trên: Chọn, Nối cạnh, Hoàn tác, Làm lại, Vô hướng/Có hướng, Nhập, Xuất, Toàn màn hình, Reset, Thêm ví dụ. Không có tên Dijkstra, Thêm node, Thêm cạnh hoặc Xóa.
+- **Thanh chạy nổi** nằm ngay dưới thanh công cụ và chỉ hiện khi lựa chọn hợp lệ. Thứ tự: Đầu, Lùi, bộ đếm `4 / 12`, Tiếp, Cuối; vạch phân cách; Chạy/Dừng; bật/tắt Kết quả. Không có Tốc độ hoặc nhãn Hoàn tất/Đang chạy; thanh range nằm sát đáy.
 - **Thanh chọn Nguồn/Đích nổi** đặt ở đáy canvas, giữa; khoảng cách nhóm 12px, nhãn–select 8px, select tối thiểu 118px và cao 38px.
 - **Cụm zoom/theme** ở góc dưới trái: thu nhỏ, phần trăm zoom, phóng to và nút Sáng/Tối. Theme được lưu trong `localStorage`.
-- **Panel bên phải** đóng mặc định. Nút Hiện kết quả mở toàn bộ Kết quả, Bảng và Diễn giải; snapshot `done` tự mở panel. Separator có nút đóng, mép phải canvas có nút mở. Panel mặc định khoảng 500px, tối thiểu 320px và bị chặn để canvas desktop còn khoảng 470px; overflow thuộc toàn vùng nội dung, bảng không có thanh cuộn riêng.
+- **Panel bên phải** đóng mặc định. Nút Hiện kết quả mở Kết quả cuối, toàn bộ Bảng và toàn bộ Diễn giải/Truy vết ngay ở mọi snapshot; snapshot `done` vẫn tự mở panel. Separator có nút đóng, mép phải canvas có nút mở. Panel mặc định khoảng 500px, tối thiểu 320px và bị chặn để canvas desktop còn khoảng 470px. Panel chỉ cuộn dọc; bảng rộng cuộn ngang trong `.table-scroll` riêng.
 - **Control đáy canvas**: zoom/theme ở trái, Nguồn/Đích ở giữa, hướng dẫn phím tắt ở phải. Khi canvas hẹp, Nguồn/Đích chuyển lên hàng trên để không che hai cụm còn lại.
-- **Responsive**: từ 768px trở lên là bố cục như trên. Dưới 768px: toolbar/runbar cuộn ngang trong khối riêng; Nguồn/Đích dùng grid hai cột với nhãn phía trên select và cột thùng rác 44px; hướng dẫn là surface cố định trong vùng an toàn giữa thanh trên và control đáy, tự cuộn nội bộ. Panel kết quả dùng bottom drawer. Kiểm tra ở 1280, 820 và 390px; vùng chạm tối thiểu 44px.
+- **Responsive**: từ 768px trở lên giữ bố cục desktop; toolbar bị giới hạn trong canvas và tự cuộn ngang khi splitter làm canvas hẹp. Dưới 768px dùng token `--m-gap: 8px`, `--m-bar-h: 44px`, `--m-control-h: 36px`, `--radius: 4px`. Toolbar một hàng `Chọn · Nối cạnh · Hoàn tác · Làm lại · Khác`, thiếu chỗ thì cuộn ngang ẩn scrollbar; menu Khác chứa hướng đồ thị, Ví dụ, Nhập, Xuất, theme và Hướng dẫn. Nguồn/Đích là một hàng, nhãn 12px nằm cùng giá trị; zoom chỉ còn `− 125% +`, ẩn khi runbar xuất hiện. Panel kết quả thu gọn thành drawer 44px. Kiểm tra desktop 1280×800 và mobile 360×740, 390×844, 430×932.
 - Wireframe chi tiết ở mục 3 của tab "Giao việc cho agent".
 
 ### 8.3 Quy ước hiển thị node
@@ -290,8 +290,8 @@ Giao diện là một công cụ làm việc gọn, gần với trình soạn th
 - **Sửa tại chỗ.** Nhấp node để chọn; nhấp đúp node để sửa nhãn; chọn cạnh để mở thanh giảm/sửa/tăng trọng số và xóa. Enter xác nhận, Esc hủy.
 - **Không hộp thoại chặn.** Xóa node hoặc cạnh thực hiện ngay và cho hoàn tác (Ctrl+Z), thay vì hỏi "Bạn có chắc không?".
 - **Phím tắt:** ←/→ lùi/tới, Home/End về đầu/cuối, `Backspace` xóa selection, Ctrl+Z / Ctrl+Shift+Z hoàn tác/làm lại. Space không còn là phím global; chỉ kích hoạt Chạy/Dừng theo hành vi native sau khi nút Play/Pause đã được focus/click.
-- **Kéo thả:** chuột và cảm ứng dùng chung cơ chế của React Flow; node và cạnh đi theo con trỏ ngay trong lúc kéo. Chỉ node được chọn hiện bốn điểm nối; trong lúc kéo, điểm đích được hiện để hoàn tất kết nối.
-- **Hình học anchor:** bốn handle chỉ phục vụ tạo cạnh. Cạnh đã tồn tại cắt trực tiếp tại viền tròn theo hướng hình học. Nhiều cạnh giữa cùng một cặp node được chia thành các làn song song liên tục trên viền, không dồn vào một chấm và không chồng nhãn trọng số.
+- **Kéo thả:** chuột và cảm ứng dùng chung cơ chế của React Flow; node và cạnh đi theo con trỏ ngay trong lúc kéo ở mode Chọn. Mode Nối cạnh khóa kéo node và tạo cạnh bằng hai lần chọn node.
+- **Hình học anchor:** handle kỹ thuật chỉ dùng để React Flow định vị, luôn ẩn và không nhận pointer. Cạnh đã tồn tại cắt trực tiếp tại viền tròn theo hướng hình học. Nhiều cạnh giữa cùng một cặp node được chia thành các làn song song liên tục trên viền, không dồn vào một chấm và không chồng nhãn trọng số.
 - **Nhấp đúp:** nhấp đúp nền thêm node nhưng không làm zoom; nhấp đúp node không tạo node nền. Fit view tự động không vượt 125%.
 - **Hướng dẫn:** popover mở mặc định ở lần tải trang; desktop hiển thị phím tắt chuột/bàn phím, mobile hiển thị riêng thao tác chạm, kéo và chụm. Header nằm ngoài body cuộn, có nền đặc để nội dung không ló lên phía trên; `?` mở/đóng, `Escape` đóng.
 - **Rê chuột vào node** hiện tooltip nhỏ: nhãn hiện tại, node đứng trước trên đường ngắn nhất.
@@ -317,14 +317,14 @@ Thông báo ngắn, nêu nguyên nhân và cách sửa, hiển thị ngay cạnh
 - [ ] Ô bảng bước giải căn giữa, dùng font monospace, các cột thẳng hàng.
 - [ ] Không có thư viện icon, gradient trang trí, glassmorphism, hiệu ứng phát sáng hay emoji; SVG nội tuyến chỉ dùng cho Play/Pause và bàn phím, button có tên truy cập.
 - [ ] Bảng bước giải mặc định tắt, bật/tắt được; canvas luôn là vùng lớn nhất.
-- [ ] Dùng được ở 1280, 820 và 390px; trang không cuộn ngang; nếu bảng rộng, cuộn toàn vùng nội dung kết quả.
+- [ ] Dùng được ở desktop 1280×800 và mobile 360×740, 390×844, 430×932; trang không cuộn ngang; nếu bảng rộng, chỉ `.table-scroll` cuộn ngang, panel không cuộn ngang.
 - [ ] Người dùng mới vẽ xong một đồ thị và chạy hết thuật toán trong dưới 2 phút mà không cần đọc hướng dẫn (thử với ít nhất 3 người).
 - [ ] Mọi control chính dùng được bằng bàn phím/focus và cảm ứng; Play/Pause không có Space global.
 - [ ] Độ tương phản chữ đạt WCAG AA.
 - [ ] Splitter thay đổi được độ rộng panel bằng kéo và bàn phím; canvas/panel co giãn bù nhau, bật bảng tự mở rộng panel khi đủ chỗ.
 - [ ] Không có nút Xóa toàn cục; Shift-chọn nhiều + `Backspace` xóa một transaction. Cạnh có nút xóa ngữ cảnh và mobile có thùng rác cạnh Nguồn/Đích.
 - [ ] Có theme sáng/tối trong cụm zoom, áp dụng đồng bộ và giữ lựa chọn sau reload.
-- [ ] Hover node không hiện điểm nối; chọn node mới hiện bốn điểm, trong lúc kéo nối mới hiện các điểm đích.
+- [ ] Node không hiện điểm nối ở bất kỳ mode nào; mode Nối cạnh tạo cạnh bằng hai click/chạm và nhấn mạnh node đầu.
 - [ ] Cạnh cắt tại viền node; hai cạnh cùng cặp node dùng hai làn/endpoint và hai nhãn trọng số tách biệt.
 - [ ] Panel đóng mặc định, tự mở ở bước done và đóng/mở được từ runbar/separator.
 - [ ] Click node chỉ chọn; double-click node sửa tên; double-click nền thêm node mà không zoom.
@@ -332,7 +332,7 @@ Thông báo ngắn, nêu nguyên nhân và cách sửa, hiển thị ngay cạnh
 - [ ] Bấm Chạy ở snapshot cuối đưa về 0 và autoplay lại.
 - [ ] Node chưa tới được không hiện ∞; đích không hiện t; nguồn vẫn hiện s.
 - [ ] Cụm Nguồn/Đích desktop có select tối thiểu 118px × 38px; mobile dùng hai cột co giãn và mỗi select rộng ít nhất 120px tại viewport 390px.
-- [ ] Bảng nằm trước Diễn giải chi tiết; không còn component/heading Giải thích bước cũ; truy vết và kết luận chỉ hiện khi done.
+- [ ] Bảng nằm trước Diễn giải chi tiết; không còn component/heading Giải thích bước cũ; toàn bộ bảng, truy vết và kết luận hiện ngay khi mở panel, không phụ thuộc step canvas.
 - [ ] Popover phím tắt phản ánh đúng các phím đang hỗ trợ.
 - [ ] SVG chevron và bàn phím dùng màu tương phản trong dark mode.
 - [ ] Khu Kết quả/Phân tích chỉ có border ở surface ngoài; badge, card, wrapper và ô bảng không lạm dụng border.
@@ -345,6 +345,12 @@ Thông báo ngắn, nêu nguyên nhân và cách sửa, hiển thị ngay cạnh
 - [ ] Trên mobile, header hướng dẫn là vùng cố định riêng ngoài body cuộn; nội dung không được xuất hiện trong khoảng phía trên header khi kéo tới bất kỳ vị trí nào.
 - [ ] Mobile chỉ hiển thị **Hướng dẫn thao tác trên điện thoại** với hành vi cảm ứng; không hiển thị danh sách phím tắt desktop trong body.
 - [ ] Nút thùng rác mobile là vùng chạm 44×44px có viền 1px đủ bốn cạnh và bo góc control.
+- [ ] Runbar không có Tốc độ hoặc Hoàn tất/Đang chạy; mobile dùng nhãn ngắn **Kết quả** và không có overflow ngang.
+- [ ] Mobile dùng thanh 44px, control 36px, bo 4px; font trong thanh chỉ 12/14px và không có weight 700.
+- [ ] Toolbar mobile luôn thấy Chọn, Nối cạnh, Hoàn tác, Làm lại và **Khác**; cuộn ngang nội bộ khi thiếu chỗ. Menu Khác chứa hướng đồ thị, Ví dụ, Nhập, Xuất, theme và Hướng dẫn.
+- [ ] Mobile không có icon bàn phím hoặc note hướng dẫn cố định; mục chữ **Hướng dẫn** mở lại popover.
+- [ ] Khi có runbar, zoom mobile bị ẩn và Kết quả thu thành drawer 44px; các thanh, attribution và drawer không giao nhau.
+- [ ] Đồ thị vô hướng vẽ đúng một đường, một nhãn trọng số và không có mũi tên cho mỗi cạnh.
 
 ### 8.8 Bảng bước giải
 
@@ -447,3 +453,5 @@ Chưa ước lượng thời gian, vì phụ thuộc vào quỹ thời gian củ
 16. **Góp ý giao diện vòng 8**: handle chỉ hiện khi chọn/đang nối; chọn cạnh mở thanh −/trọng số/+/xóa; bảng bỏ sticky ngang hai cột đầu; fullscreen toggle; hướng dẫn mở mặc định và có mobile; Shift multi-delete; đổi Hiện/Ẩn kết quả; Result bỏ badge path và truy vết; cạnh dùng anchor liên tục trên viền và chia làn theo cặp node; mobile có nút xóa; Space không còn global.
 17. **Góp ý giao diện vòng 9**: mobile tách popover hướng dẫn vào safe area có top/bottom cố định và scroll nội bộ; Nguồn/Đích chuyển từ flex select 88px sang grid hai cột co giãn (thực tế khoảng 140px ở viewport 390) cùng cột xóa 44px, loại bỏ chồng lấn, cắt chữ và khoảng trống thừa bên phải.
 18. **Góp ý giao diện vòng 10**: tách header hướng dẫn khỏi body cuộn để che kín mép trên; mobile dùng bộ hướng dẫn cảm ứng riêng thay cho phím tắt desktop; nút thùng rác 44×44px có viền 1px đủ bốn cạnh.
+19. **Góp ý giao diện vòng 11**: panel luôn hiển thị lời giải cuối đầy đủ ngay khi mở và bảng cuộn ngang nội bộ; tạo cạnh chuyển sang mode Nối cạnh với hai lần chọn node, mọi handle bị ẩn; runbar bỏ Tốc độ/trạng thái. Mô tả toolbar hai tầng/note của vòng này đã được vòng 12 thay thế.
+20. **Góp ý giao diện vòng 12**: desktop toolbar cuộn nội bộ khi canvas bị thu hẹp; mobile chuẩn hóa thanh 44px/control 36px/bo 4px, toolbar một hàng có nút Khác, bỏ icon và note hướng dẫn, selector một hàng, ẩn zoom khi chạy, dùng drawer Kết quả 44px và kiểm thử tại 360×740, 390×844, 430×932.
