@@ -1,6 +1,6 @@
 # Dijkstra Algorithm Visualizer — Tài liệu đặc tả
 
-Tác giả: Huy · Trạng thái: đã cập nhật theo góp ý giao diện vòng 12 (07/11/2026) · Tài liệu tham chiếu: ECE 307, "Transshipment and Shortest Path Problems" (George Gross, UIUC), slide 51–68
+Tác giả: Huy · Trạng thái: đã cập nhật theo góp ý giao diện vòng 13 (07/11/2026) · Tài liệu tham chiếu: ECE 307, "Transshipment and Shortest Path Problems" (George Gross, UIUC), slide 51–68
 
 ## 1. Tổng quan
 
@@ -263,12 +263,12 @@ Giao diện là một công cụ làm việc gọn, gần với trình soạn th
 
 - **Canvas là trung tâm**: chiếm toàn bộ vùng làm việc, nền phẳng có lưới mờ. Mọi thanh điều khiển là thanh nổi đặt đè lên canvas, cách mép 16px, rộng vừa đủ nội dung, không chiếm hết chiều ngang.
 - **Thanh công cụ nổi** ở gần mép trên: Chọn, Nối cạnh, Hoàn tác, Làm lại, Vô hướng/Có hướng, Nhập, Xuất, Toàn màn hình, Reset, Thêm ví dụ. Không có tên Dijkstra, Thêm node, Thêm cạnh hoặc Xóa.
-- **Thanh chạy nổi** nằm ngay dưới thanh công cụ và chỉ hiện khi lựa chọn hợp lệ. Thứ tự: Đầu, Lùi, bộ đếm `4 / 12`, Tiếp, Cuối; vạch phân cách; Chạy/Dừng; bật/tắt Kết quả. Không có Tốc độ hoặc nhãn Hoàn tất/Đang chạy; thanh range nằm sát đáy.
+- **Thanh chạy nổi** nằm ngay dưới thanh công cụ và chỉ hiện khi lựa chọn hợp lệ. Thứ tự: Đầu, Lùi, bộ đếm `4 / 12`, Tiếp, Cuối; vạch phân cách; Chạy/Dừng; select tốc độ chỉ hiện `0.5x/1x/1.5x/2x`; bật/tắt Kết quả. Không hiện chữ “Tốc độ” hoặc nhãn Hoàn tất/Đang chạy; thanh range nằm sát đáy và không bị cắt.
 - **Thanh chọn Nguồn/Đích nổi** đặt ở đáy canvas, giữa; khoảng cách nhóm 12px, nhãn–select 8px, select tối thiểu 118px và cao 38px.
 - **Cụm zoom/theme** ở góc dưới trái: thu nhỏ, phần trăm zoom, phóng to và nút Sáng/Tối. Theme được lưu trong `localStorage`.
 - **Panel bên phải** đóng mặc định. Nút Hiện kết quả mở Kết quả cuối, toàn bộ Bảng và toàn bộ Diễn giải/Truy vết ngay ở mọi snapshot; snapshot `done` vẫn tự mở panel. Separator có nút đóng, mép phải canvas có nút mở. Panel mặc định khoảng 500px, tối thiểu 320px và bị chặn để canvas desktop còn khoảng 470px. Panel chỉ cuộn dọc; bảng rộng cuộn ngang trong `.table-scroll` riêng.
 - **Control đáy canvas**: zoom/theme ở trái, Nguồn/Đích ở giữa, hướng dẫn phím tắt ở phải. Khi canvas hẹp, Nguồn/Đích chuyển lên hàng trên để không che hai cụm còn lại.
-- **Responsive**: từ 768px trở lên giữ bố cục desktop; toolbar bị giới hạn trong canvas và tự cuộn ngang khi splitter làm canvas hẹp. Dưới 768px dùng token `--m-gap: 8px`, `--m-bar-h: 44px`, `--m-control-h: 36px`, `--radius: 4px`. Toolbar một hàng `Chọn · Nối cạnh · Hoàn tác · Làm lại · Khác`, thiếu chỗ thì cuộn ngang ẩn scrollbar; menu Khác chứa hướng đồ thị, Ví dụ, Nhập, Xuất, theme và Hướng dẫn. Nguồn/Đích là một hàng, nhãn 12px nằm cùng giá trị; zoom chỉ còn `− 125% +`, ẩn khi runbar xuất hiện. Panel kết quả thu gọn thành drawer 44px. Kiểm tra desktop 1280×800 và mobile 360×740, 390×844, 430×932.
+- **Responsive**: từ 768px trở lên giữ bố cục desktop; toolbar bị giới hạn trong canvas và tự cuộn ngang khi splitter làm canvas hẹp. Dưới 768px, toolbar bo 10px có hàng chính cao 44px chia đều `Chọn · Nối cạnh · Hoàn tác · Làm lại · ⋮`; nút ba chấm mở tầng dưới cao gọn, cuộn ngang nội bộ và đẩy runbar xuống 8px. Runbar cao 48px, control 28–52px, progress luôn nhìn thấy. Nguồn/Đích một hàng; zoom ẩn khi chạy; Kết quả và Hướng dẫn nằm cạnh nhau ở đáy. Panel Kết quả mở chiếm trọn vùng còn lại dưới toolbar/runbar. Kiểm tra desktop 1280×800 và mobile 360×740, 390×844, 430×932.
 - Wireframe chi tiết ở mục 3 của tab "Giao việc cho agent".
 
 ### 8.3 Quy ước hiển thị node
@@ -345,11 +345,11 @@ Thông báo ngắn, nêu nguyên nhân và cách sửa, hiển thị ngay cạnh
 - [ ] Trên mobile, header hướng dẫn là vùng cố định riêng ngoài body cuộn; nội dung không được xuất hiện trong khoảng phía trên header khi kéo tới bất kỳ vị trí nào.
 - [ ] Mobile chỉ hiển thị **Hướng dẫn thao tác trên điện thoại** với hành vi cảm ứng; không hiển thị danh sách phím tắt desktop trong body.
 - [ ] Nút thùng rác mobile là vùng chạm 44×44px có viền 1px đủ bốn cạnh và bo góc control.
-- [ ] Runbar không có Tốc độ hoặc Hoàn tất/Đang chạy; mobile dùng nhãn ngắn **Kết quả** và không có overflow ngang.
-- [ ] Mobile dùng thanh 44px, control 36px, bo 4px; font trong thanh chỉ 12/14px và không có weight 700.
-- [ ] Toolbar mobile luôn thấy Chọn, Nối cạnh, Hoàn tác, Làm lại và **Khác**; cuộn ngang nội bộ khi thiếu chỗ. Menu Khác chứa hướng đồ thị, Ví dụ, Nhập, Xuất, theme và Hướng dẫn.
-- [ ] Mobile không có icon bàn phím hoặc note hướng dẫn cố định; mục chữ **Hướng dẫn** mở lại popover.
-- [ ] Khi có runbar, zoom mobile bị ẩn và Kết quả thu thành drawer 44px; các thanh, attribution và drawer không giao nhau.
+- [ ] Runbar không có chữ Tốc độ hoặc Hoàn tất/Đang chạy; select chỉ hiện hệ số `0.5x/1x/1.5x/2x` và thực sự đổi nhịp autoplay.
+- [ ] Toolbar mobile có hàng chính 44px chia đều Chọn, Nối cạnh, Hoàn tác, Làm lại, ba chấm đứng; tầng dưới xuất hiện bên trong cùng surface, cuộn ngang và không chồng runbar.
+- [ ] Mobile dùng bo 10px cho surface, 7px cho control; cỡ chữ 11–13px, control runbar 28–52px để không chiếm gần hết chiều ngang.
+- [ ] Mobile không có icon bàn phím hoặc note cố định; nút chữ **Hướng dẫn** ở góc phải dưới và không chồng nút Kết quả.
+- [ ] Progress mobile nhìn thấy đầy đủ; khi mở Kết quả, panel phủ toàn vùng còn lại dưới toolbar/runbar và hiển thị đủ Result, Bảng, Diễn giải qua cuộn nội bộ.
 - [ ] Đồ thị vô hướng vẽ đúng một đường, một nhãn trọng số và không có mũi tên cho mỗi cạnh.
 
 ### 8.8 Bảng bước giải
@@ -455,3 +455,4 @@ Chưa ước lượng thời gian, vì phụ thuộc vào quỹ thời gian củ
 18. **Góp ý giao diện vòng 10**: tách header hướng dẫn khỏi body cuộn để che kín mép trên; mobile dùng bộ hướng dẫn cảm ứng riêng thay cho phím tắt desktop; nút thùng rác 44×44px có viền 1px đủ bốn cạnh.
 19. **Góp ý giao diện vòng 11**: panel luôn hiển thị lời giải cuối đầy đủ ngay khi mở và bảng cuộn ngang nội bộ; tạo cạnh chuyển sang mode Nối cạnh với hai lần chọn node, mọi handle bị ẩn; runbar bỏ Tốc độ/trạng thái. Mô tả toolbar hai tầng/note của vòng này đã được vòng 12 thay thế.
 20. **Góp ý giao diện vòng 12**: desktop toolbar cuộn nội bộ khi canvas bị thu hẹp; mobile chuẩn hóa thanh 44px/control 36px/bo 4px, toolbar một hàng có nút Khác, bỏ icon và note hướng dẫn, selector một hàng, ẩn zoom khi chạy, dùng drawer Kết quả 44px và kiểm thử tại 360×740, 390×844, 430×932.
+21. **Góp ý giao diện vòng 13**: khôi phục toolbar mobile hai tầng bằng nút ba chấm đứng, chia đều hàng chính và thu nhỏ control; thêm select tốc độ chỉ hiện hệ số; giữ progress lộ hoàn toàn; đưa nút chữ Hướng dẫn xuống góc phải và mở panel Kết quả toàn vùng khả dụng. Vòng này thay thế các chi tiết mobile một hàng/Khác/radius 4px của vòng 12.

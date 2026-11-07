@@ -125,7 +125,7 @@ Sau đó mở địa chỉ mạng mà Vite hiển thị. Hệ điều hành có 
 
 1. Mở ứng dụng: canvas hoàn toàn trống và không có hộp nạp mẫu. Nhấn **Thêm ví dụ** trên toolbar để nạp VD1.
 2. Kiểm tra hai ô **Nguồn** và **Đích** ở phía dưới canvas.
-3. Dùng cụm transport `|‹`, `‹`, `›`, `›|` và nút SVG Play/Pause để về đầu, lùi, tiến, tới cuối hoặc chạy/dừng tự động. Di chuột vào nút để xem nhãn tiếng Việt.
+3. Dùng cụm transport `|‹`, `‹`, `›`, `›|` và nút SVG Play/Pause để về đầu, lùi, tiến, tới cuối hoặc chạy/dừng tự động. Chọn `0.5x`, `1x`, `1.5x` hoặc `2x` để đổi tốc độ; control không hiển thị thêm chữ “Tốc độ”.
 4. Panel kết quả đóng mặc định. Nhấn **Hiện kết quả** để mở Kết quả, Bảng bước giải và Diễn giải chi tiết; khi thuật toán hoàn tất, panel tự mở.
 5. Kéo separator để đổi độ rộng panel; dùng nút trên separator để đóng và nút ở mép phải canvas để mở lại. Panel luôn chừa đủ chỗ cho control canvas. Panel chỉ cuộn dọc; bảng rộng có thanh cuộn ngang riêng trong vùng Bảng bước giải.
 6. Tới bước cuối để xem khoảng cách, đường đi và diễn giải từng bước. Truy vết nằm trong phần Diễn giải chi tiết, không lặp lại ở thẻ Kết quả. Bấm **Chạy** lần nữa ở bước cuối để phát lại từ bước 0.
@@ -152,9 +152,9 @@ Nút **Reset** làm mới thành canvas trống hoàn toàn. Nút **Thêm ví d�
 
 Node chưa có khoảng cách hữu hạn không hiện `∞`; node đích không hiện chữ `t`. Node nguồn vẫn có chữ `s`. Canvas vẫn trực quan hóa theo từng bước, nhưng khi mở panel, Kết quả, toàn bộ Bảng bước giải và toàn bộ Diễn giải/Truy vết luôn hiện lời giải cuối ngay từ đầu.
 
-Hướng dẫn tự mở khi tải trang. Desktop hiển thị phím tắt chuột/bàn phím và giữ nút SVG bàn phím; mobile tự chuyển sang **Hướng dẫn thao tác trên điện thoại** với mode Chọn/Nối cạnh, cách chạm, chạm đúp, chỉnh/xóa phần tử, kéo/chụm canvas và điều khiển thuật toán. Trên mobile không có icon/note hướng dẫn cố định; mở lại bằng mục chữ **Hướng dẫn** trong menu **Khác**.
+Hướng dẫn tự mở khi tải trang. Desktop hiển thị phím tắt chuột/bàn phím và giữ nút SVG bàn phím; mobile tự chuyển sang **Hướng dẫn thao tác trên điện thoại** với mode Chọn/Nối cạnh, cách chạm, chạm đúp, chỉnh/xóa phần tử, kéo/chụm canvas và điều khiển thuật toán. Trên mobile không có icon/note hướng dẫn cố định; nút chữ **Hướng dẫn** ở góc phải dưới mở lại popover.
 
-Trên mobile dưới 768px, mọi thanh nổi cao 44px, control bên trong cao 36px và bo 4px. Toolbar là một hàng **Chọn · Nối cạnh · Hoàn tác · Làm lại · Khác**, tự cuộn ngang và ẩn scrollbar khi thiếu chỗ. **Khác** mở menu gồm hướng đồ thị, Thêm ví dụ, Nhập, Xuất, Sáng/Tối và Hướng dẫn. Nguồn/Đích nằm cùng một hàng với nhãn phụ 12px; zoom chỉ còn `− 125% +`. Khi runbar xuất hiện, zoom ẩn và kết quả thu thành drawer 44px. Hướng dẫn nằm trong safe area, header cố định ngoài body cuộn; nút thùng rác vẫn là vùng chạm 44×44px có đủ bốn cạnh viền.
+Trên mobile dưới 768px, toolbar có hai tầng bo tròn: hàng chính chia đều **Chọn · Nối cạnh · Hoàn tác · Làm lại · ⋮**; chạm nút ba chấm mở tầng dưới cuộn ngang với hướng đồ thị, Nhập, Xuất, Toàn màn hình, Reset, Thêm ví dụ và theme. Runbar thu gọn nhưng vẫn hiện đầy đủ progress và select tốc độ dạng `1x/2x`. Nguồn/Đích nằm cùng một hàng; khi chạy, zoom ẩn để dành chỗ cho **Kết quả** và **Hướng dẫn** ở đáy. Khi mở Kết quả, panel dùng toàn bộ vùng còn lại dưới toolbar/runbar và tự cuộn, không che control trên.
 
 Nút **Toàn màn hình** hoạt động hai chiều: bấm lần đầu để vào và bấm lại để thoát. Nếu thoát bằng `Escape`, nhãn nút cũng tự đồng bộ.
 

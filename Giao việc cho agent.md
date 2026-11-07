@@ -618,3 +618,17 @@ Mục này thắng mọi mô tả cũ về toolbar desktop/mobile, note hướng
 7. Dời attribution React Flow tới vùng trống; không để giao toolbar, runbar, selectors, hướng dẫn hoặc drawer. Khi chưa chạy, tổng vùng cao bị các thanh che không quá 25% viewport.
 8. Mỗi cạnh vô hướng chỉ render một đường, một nhãn và không marker mũi tên. Không thay đổi engine, state, schema hoặc dữ liệu preset.
 9. Playwright đo tại 360×740, 390×844, 430×932: thanh 44±1, control 36±1, radius 4px, font chỉ 12/14px, không weight 700, không giao nhau và không cuộn ngang trang. Desktop 1280×800 phải giữ giao diện, đồng thời kéo splitter xác nhận toolbar nằm trọn trong canvas và có scroll nội bộ.
+
+## 18. Điều chỉnh sau vòng góp ý giao diện 13
+
+Mục này thắng phần mobile một hàng, nút Khác, radius 4px và autoplay cố định của vòng 11–12:
+
+1. Thêm select tốc độ vào runbar với các giá trị `0.5x`, `1x`, `1.5x`, `2x`; giao diện chỉ hiện hệ số, không có chữ **Tốc độ**. Interval autoplay phải tính theo hệ số đã chọn.
+2. Khôi phục toolbar mobile hai tầng. Hàng chính cao 44px, chia đều bốn action Chọn/Nối cạnh/Hoàn tác/Làm lại và nút ba chấm đứng 34px ở mép phải, không để khoảng trống dư.
+3. Tầng dưới nằm trong cùng surface, mở bằng nút ba chấm, cao gọn và cuộn ngang ẩn scrollbar. Thứ tự: Vô/Có hướng, Nhập, Xuất, Toàn màn hình, Reset, Thêm ví dụ, theme. Khi mở phải tăng chiều cao toolbar và đẩy runbar xuống ít nhất 8px.
+4. Mobile dùng surface bo 10px, control bo 7px, chữ 11–13px; control runbar rộng 28–52px. Không để cụm Đầu/Lùi/Tiếp/Cuối chiếm gần hết chiều ngang.
+5. Runbar mobile cao 48px. Range cao đủ cho thumb/track, nằm sát đáy nhưng không bị `overflow` cắt; select tốc độ và nút Kết quả vẫn nằm trên cùng một hàng.
+6. Nút mở hướng dẫn mobile là chữ **Hướng dẫn** ở góc phải dưới, không dùng icon. Khi có kết quả đóng, nút Kết quả nằm bên trái và cách Hướng dẫn ít nhất 8px.
+7. Khi mở trên mobile, panel Kết quả có top ngay dưới toolbar + runbar và bottom 8px; dùng toàn bộ vùng còn lại, panel-content tự cuộn để truy cập đủ Result, Bảng và Diễn giải.
+8. Playwright chụp và đo tại 360×740, 390×844, 430×932: hàng chính kín chiều ngang, toolbar mở cao 82px, runbar cao 48px, progress nằm trong vùng nhìn thấy, Kết quả/Hướng dẫn không giao nhau, panel mở dùng toàn vùng và trang không overflow ngang.
+9. Sau mỗi nhóm thay đổi hoàn chỉnh, chạy kiểm tra liên quan và commit riêng. Ghi hash, phạm vi và kết quả test của commit chức năng vào `Vận hành.md`; không push nếu chưa được yêu cầu.

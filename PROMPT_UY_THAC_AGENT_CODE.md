@@ -97,7 +97,7 @@ Nếu repo mới chỉ có tài liệu, bắt đầu từ T0. Nếu đã có cod
 - Khi panel mở ở bất kỳ step nào, `Result`, `LabelTable` và `DetailedExplanation` đều nhận snapshot cuối: hiện ngay kết quả cuối, toàn bộ bảng, các bước giải và truy vết. Canvas/runbar vẫn dùng snapshot hiện tại. Không còn `Explanation` snapshot đơn.
 - Engine và snapshot dùng NodeId, nhưng mọi nội dung nhìn thấy trong Kết quả, Bảng bước giải và DetailedExplanation phải ánh xạ sang `node.label` do người dùng nhập: tiêu đề cột, đỉnh cố định, predecessor, phép cập nhật, path và trace. Chỉ fallback ID khi không tìm thấy label.
 - Bảng bước giải chỉ để đọc: không callback nhảy bước, không `onClick` trên hàng/ô và không button cho số bước. Không sticky ngang cột Bước/Đỉnh cố định; cuộn ngang kéo toàn bảng, chỉ header sticky theo chiều dọc.
-- Runbar theo bố cục: `|‹`, `‹`, bộ đếm hiện tại/tổng, `›`, `›|`, phân cách, chạy/dừng và bật/tắt Kết quả; range nằm sát đáy. Không có Tốc độ hoặc Hoàn tất/Đang chạy.
+- Runbar theo bố cục: `|‹`, `‹`, bộ đếm hiện tại/tổng, `›`, `›|`, phân cách, chạy/dừng, select chỉ hiện `0.5x/1x/1.5x/2x` và bật/tắt Kết quả; range nằm sát đáy nhưng không bị cắt. Không có chữ Tốc độ hoặc Hoàn tất/Đang chạy.
 - “Cuối” nhảy tới snapshot `done`; “Đầu” về snapshot 0. Khi đang auto-play, mọi thao tác điều hướng khác phải dừng play trước.
 - Khi đang ở snapshot cuối và bấm Chạy, đưa step về 0 rồi autoplay lại; ở giữa tiến trình tiếp tục từ bước hiện tại. Không đăng ký Space global; Space chỉ kích hoạt button theo hành vi native sau khi Play/Pause được focus/click.
 - Sửa dữ liệu graph khi đang ở snapshot khác 0 hoặc đang play: dừng play, áp dụng thay đổi, tái tạo kết quả và đưa phiên chạy về snapshot 0, đồng thời báo ngắn gọn. Chỉ kéo vị trí node không làm chạy lại engine.
@@ -110,10 +110,10 @@ Nếu repo mới chỉ có tài liệu, bắt đầu từ T0. Nếu đã có cod
 - Ở mobile dưới 768px, không neo popover hướng dẫn từ nút góc dưới theo cách khiến nó phủ Nguồn/Đích. Dùng surface `position: fixed` trong safe area giữa toolbar/runbar và control đáy, nền đặc, scroll nội bộ, header/đóng luôn rõ. Tại 390×844 phải có tối thiểu 8px giữa popover với toolbar và selectors.
 - Header popover không nằm trong vùng scroll: popover `overflow: hidden`, header nền đặc/tách bằng border, chỉ body cuộn. Dưới 768px ẩn nội dung desktop và hiện tiêu đề **Hướng dẫn thao tác trên điện thoại** cùng các thao tác chạm, kéo và chụm.
 - Desktop toolbar phải nằm trọn trong canvas khi kéo splitter; nếu thiếu chỗ thì cuộn ngang nội bộ, không tràn qua panel kết quả.
-- Dưới 768px dùng token `--m-gap: 8px`, `--m-bar-h: 44px`, `--m-control-h: 36px`, `--radius: 4px`. Toolbar một hàng Chọn, Nối cạnh, Hoàn tác, Làm lại, Khác; cuộn ngang ẩn scrollbar khi thiếu chỗ. **Khác** mở menu hướng đồ thị, Thêm ví dụ, Nhập, Xuất, theme và Hướng dẫn.
-- Mobile bỏ icon bàn phím và note **Xem hướng dẫn tại đây →**; mục chữ **Hướng dẫn** trong menu Khác mở lại popover cảm ứng.
+- Dưới 768px, toolbar mobile hai tầng dùng surface bo 10px và control bo 7px. Hàng chính cao 44px chia đều Chọn, Nối cạnh, Hoàn tác, Làm lại và nút ba chấm đứng; tầng dưới cuộn ngang chứa hướng đồ thị, Nhập, Xuất, Toàn màn hình, Reset, Thêm ví dụ và theme, đồng thời đẩy runbar xuống.
+- Mobile bỏ icon bàn phím và note **Xem hướng dẫn tại đây →**; nút chữ **Hướng dẫn** ở góc phải dưới mở lại popover cảm ứng.
 - Cụm Nguồn/Đích mobile dùng CSS grid `minmax(0,1fr) minmax(0,1fr) auto`; label 12px nằm cùng hàng với giá trị 14px, mỗi select rộng tối thiểu 120px ở viewport 390, nút xóa 44×44px ở cột cuối và khoảng trống tới mép phải không quá 12px.
-- Zoom mobile chỉ còn `− 125% +`; khi runbar 44px xuất hiện thì ẩn zoom và hiển thị drawer Kết quả thu gọn 44px. Các thanh dưới cách đáy ít nhất 24px cộng safe-area.
+- Zoom mobile chỉ còn `− 125% +`; khi runbar 48px xuất hiện thì ẩn zoom. Nút Kết quả đóng nằm bên trái nút Hướng dẫn và không giao nhau; khi mở, panel Kết quả dùng toàn bộ vùng còn lại dưới toolbar/runbar và tự cuộn.
 - Nút xóa mobile phải là button 44×44px có border 1px đủ bốn cạnh, không chỉ có divider/border trái.
 - Khu Kết quả/Phân tích chỉ có border ở surface ngoài; bỏ border khỏi badge, card, wrapper và cell bảng, dùng background/spacing/sticky/highlight để phân cấp.
 - Xóa thực hiện ngay, không confirmation dialog, và có thể undo. Các lỗi nhập hiển thị inline/non-blocking; không dùng `alert()`.
@@ -174,7 +174,7 @@ Ngoài toàn bộ điều kiện nghiệm thu T0–T6 trong `Giao việc cho age
 - Playwright kiểm handle luôn ẩn; mode Nối cạnh tạo cạnh bằng hai click; thanh cạnh −/sửa/+/xóa; Shift multi-delete; bảng không sticky ngang và tự cuộn trong zone; fullscreen vào/thoát; Space không global; hướng dẫn trong menu Khác; Result không badge/trace; hai cạnh đối hướng tách làn/nhãn; thùng rác mobile luôn nằm trong viewport.
 - Playwright tại 390×844 đo bounding box để bảo đảm hướng dẫn không giao toolbar/selectors/zoom, hai select ≥120px, thùng rác cách mép trong bên phải ≤12px và trang không tràn ngang.
 - Playwright tại 390×640 buộc body hướng dẫn cuộn, xác nhận header không đổi tọa độ, nội dung desktop bị ẩn và bốn cạnh nút xóa đều có border 1px.
-- Playwright tại step giữa xác nhận panel đã có kết quả cuối, đủ hàng bảng và truy vết. Tại ba viewport mobile xác nhận thanh 44px, control 36px, radius 4px, font 12/14px không weight 700, toolbar một hàng có Khác, runbar gọn, không giao nhau; đồ thị vô hướng chỉ có một đường/nhãn và không mũi tên.
+- Playwright tại step giữa xác nhận panel đã có kết quả cuối, đủ hàng bảng và truy vết. Tại ba viewport mobile xác nhận toolbar đóng 44px/mở 82px, hàng chính phân bố kín, tầng dưới cuộn ngang, runbar 48px, progress không bị cắt, speed chỉ hiện hệ số, Kết quả/Hướng dẫn không giao nhau và panel mở chiếm toàn vùng khả dụng; đồ thị vô hướng chỉ có một đường/nhãn và không mũi tên.
 - Accessibility cơ bản: semantic button/label, focus visible, keyboard, tên truy cập rõ ràng, trạng thái không chỉ dựa vào màu và tôn trọng `prefers-reduced-motion`.
 
 Nếu tiêu chí “thử với 3 người dùng thật” không thể thực hiện trong môi trường agent, không được tuyên bố đã đạt. Ghi rõ đây là bước nghiệm thu thủ công còn lại và cung cấp checklist ngắn để người dùng thực hiện.
