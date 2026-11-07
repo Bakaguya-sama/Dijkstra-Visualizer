@@ -621,12 +621,12 @@ Mục này thắng mọi mô tả cũ về toolbar desktop/mobile, note hướng
 
 ## 18. Điều chỉnh sau vòng góp ý giao diện 13
 
-Mục này thắng phần mobile một hàng, nút Khác, radius 4px và autoplay cố định của vòng 11–12:
+Mục này thắng phần mobile một hàng, nút Khác, radius cũ và autoplay cố định của vòng 11–12; chi tiết toolbar được mục 20 cập nhật tiếp:
 
 1. Thêm select tốc độ vào runbar với các giá trị `0.5x`, `1x`, `1.5x`, `2x`; giao diện chỉ hiện hệ số, không có chữ **Tốc độ**. Interval autoplay phải tính theo hệ số đã chọn.
-2. Khôi phục toolbar mobile hai tầng. Hàng chính cao 44px, chia đều bốn action Chọn/Nối cạnh/Hoàn tác/Làm lại và nút ba chấm đứng 34px ở mép phải, không để khoảng trống dư.
-3. Tầng dưới nằm trong cùng surface, mở bằng nút ba chấm, cao gọn và cuộn ngang ẩn scrollbar. Thứ tự: Vô/Có hướng, Nhập, Xuất, Toàn màn hình, Reset, Thêm ví dụ, theme. Khi mở phải tăng chiều cao toolbar và đẩy runbar xuống ít nhất 8px.
-4. Mobile dùng surface bo 10px, control bo 7px, chữ 11–13px; control runbar rộng 28–52px. Không để cụm Đầu/Lùi/Tiếp/Cuối chiếm gần hết chiều ngang.
+2. Khôi phục toolbar mobile hai tầng. Hàng chính cao 44px gồm Chọn, Nối cạnh, Thêm ví dụ, icon Hoàn tác, icon Làm lại và nút ba chấm đứng 34px ở mép phải, không để khoảng trống dư.
+3. Tầng dưới nằm trong cùng surface, mở bằng nút ba chấm, cao gọn và cuộn ngang ẩn scrollbar. Thứ tự: Vô/Có hướng, Nhập, Xuất, Toàn màn hình, Reset, theme. Khi mở phải tăng chiều cao toolbar và đẩy runbar xuống ít nhất 8px.
+4. Mobile dùng surface và control bo 4px, chữ 11–13px; control runbar rộng 28–52px. Không để cụm Đầu/Lùi/Tiếp/Cuối chiếm gần hết chiều ngang.
 5. Runbar mobile cao 48px. Range cao đủ cho thumb/track, nằm sát đáy nhưng không bị `overflow` cắt; select tốc độ và nút Kết quả vẫn nằm trên cùng một hàng.
 6. Nút mở hướng dẫn mobile là chữ **Hướng dẫn** ở góc phải dưới, không dùng icon. Khi có kết quả đóng, nút Kết quả nằm bên trái và cách Hướng dẫn ít nhất 8px.
 7. Khi mở trên mobile, panel Kết quả có top ngay dưới toolbar + runbar và bottom 8px; dùng toàn bộ vùng còn lại, panel-content tự cuộn để truy cập đủ Result, Bảng và Diễn giải.
@@ -643,3 +643,13 @@ Mục này thắng các mô tả cũ về nút Kết quả trong runbar và chi�
 4. Mỗi label dùng grid `max-content minmax(0, 1fr)`. Nhãn Nguồn/Đích có cột riêng, không co mất chữ; select chiếm phần còn lại và không phủ nhãn.
 5. Ở trạng thái thường, mỗi vùng select không rộng quá 150px. Tại 390px khi có nút xóa, mỗi select vẫn đạt ít nhất 120px.
 6. Playwright phải kiểm tra thêm 620×870 theo ảnh người dùng, cùng 360×740, 390×844, 430×932; xác nhận runbar mobile không có Kết quả, selectors đúng max-width, nhãn vừa cột và không overflow trang.
+
+## 20. Điều chỉnh sau vòng góp ý giao diện 15
+
+Mục này thắng mọi mô tả cũ về vị trí Thêm ví dụ và cách hiển thị Hoàn tác/Làm lại trên mobile.
+
+1. Mobile đưa nút **Thêm ví dụ** lên toolbar-primary, sau Chọn và Nối cạnh.
+2. Mobile thay chữ Hoàn tác/Làm lại bằng SVG inline mũi tên cong; button phải giữ `aria-label`/`title`, SVG `aria-hidden`, không thêm thư viện icon. Desktop tiếp tục hiện chữ.
+3. Toolbar-primary mobile gồm ba cột chữ co giãn (Chọn, Nối cạnh, Thêm ví dụ) rồi icon undo 34px, icon redo 34px, nút ba chấm 34px; không chừa khoảng trống phải.
+4. Ẩn Thêm ví dụ trong toolbar-secondary ở mobile để không lặp action; desktop không đổi thứ tự/hiển thị toolbar.
+5. E2E tại 360×740, 390×844, 430×932, 620×870 phải xác nhận Ví dụ hiển thị ở hàng đầu, hai SVG undo/redo hiển thị, text icon bị ẩn chỉ trên mobile, tầng dưới không lặp Ví dụ và không overflow ngang.

@@ -16,6 +16,8 @@
 | `6406ce8` | Thêm speed `0.5x/1x/1.5x/2x`, thay interval autoplay và test control | lint pass, 24 unit test pass, E2E preset pass |
 | `288d076` | Khôi phục toolbar mobile hai tầng, thu gọn runbar, hiện progress, nút Hướng dẫn chữ và panel Kết quả toàn vùng | lint pass; 3 E2E responsive/splitter pass; ảnh 360/390/430px đã xem trực tiếp |
 | `08e8dc3` | Bỏ Kết quả khỏi runbar mobile; thu selectors thường còn 360px và trạng thái có nút xóa tối đa 380px | lint pass; 2 E2E mobile pass; ảnh 620×870 đã xem trực tiếp |
+| `562df94` | Đưa Thêm ví dụ lên toolbar chính mobile; SVG inline undo/redo, bỏ Ví dụ tầng dưới | lint pass; E2E toolbar tại 360/390/430/620px pass; ảnh 620×870 đã xem trực tiếp |
+| `d93b3b3` | Chuẩn hóa bo góc mọi surface/control mobile là 4px và ổn định assertion màu dark theme | lint pass; 24 unit test pass; build pass; 17 E2E pass |
 
 ## Checklist bàn giao vòng 13
 
@@ -35,4 +37,4 @@
 | `npm run build` | PASS — TypeScript + Vite production build |
 | `npm run e2e` | PASS — 17/17 |
 
-Các kết quả trên được chạy lại sau commit `08e8dc3`, bao gồm phép đo mới ở viewport 620×870.
+Các kết quả trên được chạy lại sau commit `d93b3b3`, bao gồm phép đo mới ở viewport 620×870, toolbar Ví dụ/undo/redo và bo góc mobile 4px.

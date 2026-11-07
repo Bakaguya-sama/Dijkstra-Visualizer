@@ -1,47 +1,31 @@
-# Góp ý giao diện vòng 14 — đã triển khai
+# Góp ý giao diện vòng 15 — đã triển khai
 
 Ngày cập nhật: 07/11/2026
 
-Phạm vi: runbar mobile và cụm chọn Nguồn/Đích.
+## Yêu cầu
 
-## 1. Yêu cầu
+- Trên mobile, đưa nút **Thêm ví dụ** lên hàng công cụ chính.
+- Thay phần hiển thị chữ **Hoàn tác** và **Làm lại** bằng icon, theo ảnh tham chiếu.
 
-- Bỏ nút **Kết quả** khỏi thanh tiến trình trên giao diện mobile.
-- Thu gọn khối chọn node nguồn và node đích; không để surface phủ gần hết chiều ngang ở thiết bị rộng.
-- Thiết kế lại nhãn và vùng giá trị để select không lấn, cắt hoặc làm mất chữ **Nguồn/Đích**.
-- Đối chiếu trực tiếp với ảnh 620×870 do người dùng cung cấp.
+## Cách thực hiện
 
-## 2. Giải pháp đã triển khai
+- Hàng chính mobile theo thứ tự: **Chọn · Nối cạnh · Thêm ví dụ · Hoàn tác · Làm lại · ⋮**.
+- Hàng chính dùng lưới sáu cột: ba action chữ co giãn, hai action icon 34px và nút ba chấm 34px; không để thừa khoảng trống ở bên phải.
+- Hoàn tác/Làm lại dùng SVG inline mũi tên cong, không thêm thư viện icon. Button giữ `aria-label` và `title` tiếng Việt; desktop vẫn hiển thị chữ đầy đủ.
+- **Thêm ví dụ** bị ẩn ở tầng dưới mobile để không lặp action; desktop giữ vị trí toolbar hiện có.
+- Theo quy tắc giao diện hiện hành, surface và control mobile dùng bo góc 4px nhất quán.
 
-- `.runbar .table-toggle` bị ẩn dưới 768px; nút **Kết quả** ở hàng đáy vẫn giữ và là điểm mở panel duy nhất trên mobile.
-- Cụm `.selectors` căn giữa, rộng tối đa 360px ở trạng thái thường thay vì kéo từ mép trái tới mép phải.
-- Khi xuất hiện nút xóa 44×44px, surface tự nới tối đa 380px để giữ đủ không gian cho hai select.
-- Mỗi nhóm dùng grid hai cột: nhãn `max-content` và giá trị `minmax(0, 1fr)`; nhãn font 10px, gap 2px, padding trái 3px.
-- Vùng select có chiều rộng tối đa khoảng 150px ở trạng thái thường; nhãn luôn hiển thị trọn.
-- Tại viewport 390px khi có nút xóa, mỗi select vẫn rộng ít nhất 120px và nút xóa giữ đủ bốn cạnh border.
+## Đối chiếu ảnh
 
-## 3. File thay đổi
+- Ảnh Playwright 620×870 xác nhận Ví dụ ở hàng đầu, hai icon mũi tên hiển thị rõ, ba chấm ở mép phải và không có overlap.
+- Kiểm tra tại 360×740, 390×844, 430×932, 620×870 vẫn giữ toolbar/runbar/selectors trong viewport và không tạo cuộn ngang trang.
 
-- `src/styles/app.css`
-- `e2e/app.spec.ts`
-- `Góp ý.md`, `Đặc tả.md`, `Giao việc cho agent.md`, `PROMPT_UY_THAC_AGENT_CODE.md`, `README.md`, `AGENTS.md`, `Vận hành.md`
+## Commit và kiểm tra
 
-## 4. Kiểm tra bằng ảnh và Playwright
+- `562df94` — `feat: promote example action on mobile toolbar`
+- `npm run lint`: PASS.
+- `npm run test`: PASS — 24/24.
+- `npm run build`: PASS.
+- `npm run e2e`: PASS — 17/17; bao gồm 360×740, 390×844, 430×932 và 620×870.
 
-- Thêm viewport 620×870 đúng tỷ lệ ảnh tham chiếu, bên cạnh 360×740, 390×844, 430×932.
-- Ảnh sau thay đổi: `mobile-compact-620x870.png` và `mobile-result-620x870.png` trong artifact Playwright.
-- [x] Runbar mobile không còn nút Kết quả.
-- [x] Nút Kết quả ở đáy vẫn mở được toàn panel.
-- [x] Selectors thường không rộng quá 360px; trạng thái có nút xóa không quá 380px.
-- [x] Nhãn Nguồn/Đích không bị cắt.
-- [x] Vùng giá trị trạng thái thường không rộng quá 150px.
-- [x] Select đạt tối thiểu 120px ở 390px khi có nút xóa.
-- [x] Không phát sinh cuộn ngang trang hoặc giao nhau với control đáy.
-
-## 5. Commit
-
-- `08e8dc3` — `fix: compact mobile endpoint controls`
-
-Kết quả kiểm tra cuối và lịch sử vận hành được ghi trong `Vận hành.md`.
-
-Kết quả lần chạy cuối: lint PASS; 24/24 unit test PASS; production build PASS; 17/17 Playwright E2E PASS.
+Kết quả kiểm tra đầy đủ và lịch sử commit được ghi trong `Vận hành.md`.
